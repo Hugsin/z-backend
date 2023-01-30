@@ -1,0 +1,13 @@
+POST https://www.nunuyy1.org/url.php HTTP/1.1
+accept: */*,
+accept-language: zh-CN,zh;q=0.9,
+cache-control: no-cache,
+content-type: application/x-www-form-urlencoded; charset=UTF-8,
+pragma: no-cache,
+sec-fetch-dest: empty,
+sec-fetch-mode: cors,
+sec-fetch-site: same-origin,
+sec-gpc: 1,
+x-requested-with: XMLHttpRequest
+
+url=H8PkDYlXAWHPVjoys9j2nfYmaLoGK8FKgjGk7ewoCVzzGMUcWmmMDyG%2FMbCopx5vHfGHgV1UKRm025u%2ByqVxIOa5PuAbTJvk7BOx3pVPtbQhxX84FVc7lPKtd7xubX1wV4KRcGymQBhFzsBgwRvfrztEesRtU2SmZCd3niwVHLt22Isy1yFy38vm72A8oHHELRYraMlOhQDa%2BlZon9XDe25iWFJnRmtT4yq%2FkydCRqE%3D&sign=1655391413
