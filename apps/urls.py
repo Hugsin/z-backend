@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import re_path, include
 from rest_framework_swagger.views import get_swagger_view
 
-schema_view = get_swagger_view(title='Z ORG API', url='/api')
+schema_view = get_swagger_view(title='Z ORG API')
 
 urlpatterns = [
     re_path(r'^$', schema_view),
@@ -26,3 +26,4 @@ urlpatterns = [
     re_path(r'^wechat/', include('wechat.urls')),
     re_path(r'^admin/', admin.site.urls),
 ]
+
