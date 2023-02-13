@@ -11,3 +11,8 @@ sec-gpc: 1,
 x-requested-with: XMLHttpRequest
 
 url=H8PkDYlXAWHPVjoys9j2nfYmaLoGK8FKgjGk7ewoCVzzGMUcWmmMDyG%2FMbCopx5vHfGHgV1UKRm025u%2ByqVxIOa5PuAbTJvk7BOx3pVPtbQhxX84FVc7lPKtd7xubX1wV4KRcGymQBhFzsBgwRvfrztEesRtU2SmZCd3niwVHLt22Isy1yFy38vm72A8oHHELRYraMlOhQDa%2BlZon9XDe25iWFJnRmtT4yq%2FkydCRqE%3D&sign=1655391413
+
+### 
+GET https://www.tigerzh.com/api/wechat/auth?signature=49bcf3109945c2a30948d5c4af6ba846a7ae7d10&echostr=7785083058553355250&timestamp=1676274626&nonce=1247856628 HTTP/1.1
+###
+GET http://127.0.0.1:8000/wechat/auth?signature=49bcf3109945c2a30948d5c4af6ba846a7ae7d10&echostr=7785083058553355250&timestamp=1676274626&nonce=1247856628 HTTP/1.1

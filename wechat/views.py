@@ -1,6 +1,8 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
+from django.http import HttpResponse
 import hashlib
+
 # Create your views here.
 
 
@@ -16,5 +18,4 @@ class WechatViewset(ModelViewSet):
         sha = hashlib.sha1(signature_str.encode('utf-8'))
         encrypts = sha.hexdigest()
         if encrypts == signature:
-            return Response(echostr)
-        return Response(encrypts == signature)
+            return HttpResponse((echostr))
