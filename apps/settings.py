@@ -42,9 +42,7 @@ INSTALLED_APPS = [
     "django_filters",
     "rest_framework",
     "rest_framework_swagger",
-    "complete",
-    "product",
-    "wechat"
+    "src",
 ]
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
@@ -181,7 +179,7 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-TABLE_PREFIX='zorg_'
+TABLE_PREFIX = 'zorg_'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
@@ -302,3 +300,5 @@ LOGGING = {
         },
     },
 }
+
+WECHAT_URL = 'https://api.weixin.qq.com/cgi-bin'

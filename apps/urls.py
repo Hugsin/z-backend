@@ -21,9 +21,8 @@ schema_view = get_swagger_view(title='Z ORG API')
 
 urlpatterns = [
     re_path(r'^$', schema_view),
-    re_path(r'^complete/', include('complete.urls')),
-    re_path(r'^product/', include('product.urls')),
-    re_path(r'^wechat/', include('wechat.urls')),
+    re_path(r'^open/', include('src.urls')),
+    # re_path(r'^product/', include('product.urls')),
     re_path(r'^admin/', admin.site.urls),
 ]
 

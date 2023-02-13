@@ -12,10 +12,13 @@ class WechatViewset(ModelViewSet):
         timestamp = request.query_params.get('timestamp')
         nonce = request.query_params.get('nonce')
         echostr = request.query_params.get('echostr')
-        auth_list = ['iPHb20xtvBo6rIACXaFg13LTnSRD9Yez', timestamp, nonce]
-        auth_list.sort()
-        signature_str = (''.join(auth_list))
-        sha = hashlib.sha1(signature_str.encode('utf-8'))
-        encrypts = sha.hexdigest()
-        if encrypts == signature:
-            return HttpResponse((echostr))
+        if echostr != None:
+            auth_list = ['iPHb20xtvBo6rIACXaFg13LTnSRD9Yez', timestamp, nonce]
+            auth_list.sort()
+            signature_str = (''.join(auth_list))
+            sha = hashlib.sha1(signature_str.encode('utf-8'))
+            encrypts = sha.hexdigest()
+            if encrypts == signature:
+                return HttpResponse((echostr))
+        else:
+            return Response('ni xx')
