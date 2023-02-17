@@ -5,7 +5,7 @@ import json
 import requests
 import uuid
 import time
-from copy import deepcopy 
+from copy import deepcopy
 from datetime import datetime
 from urllib.parse import urlencode
 from user_agents import parse
@@ -37,13 +37,16 @@ def we_chat_mp_request(request):
         data = json.loads((request.body)) if request.body else {}
         data = json.dumps(data)
         method = request.method
-        params =deepcopy(request.GET) 
+        params = deepcopy(request.GET)
         params['access_token'] = "65_fPnhFDf3-TiBUPGpLfoDRkx4iOQrCOK8wfzxPsz1AGxZnH6Asp-Ik4k6MG-9qDUVJXXXUugLiUKdyz41M74xAQIGOwcSOcgMVQLToKJzCOcMKHuH2PRorBNzmnsNELhADAARY"
         path = str(request.path).rsplit('wechatmp', 1)[-1]
         url = '%s%s' % (WECHAT_MP_URL, path)
         response = requests.request(
             method=method,
-            url=url, params=params, data=data, headers=headers)
+            url=url,
+            params=params,
+            data=data,
+            headers=headers)
         return response.json()
     except Exception as e:
         # 处理异常情况

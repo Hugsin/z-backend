@@ -48,7 +48,21 @@ Content-Type: application/json
 GET http://localhost:8000/open/wechatpay/v3/merchant-service/complaints-v2?begin_date=2023-02-11&end_date=2023-02-12 HTTP/1.1
 Content-Type: application/json
 ### 获取token
-GET http://localhost:8000/open/wechatmp/cgi-bin/get_current_selfmenu_info HTTP/1.1
+GET http://localhost:8000/open/wechatmp/cgi-bin/menu/create HTTP/1.1
+Content-Type: application/json
+
+{
+    "button": [
+        {
+            "type": "miniprogram", 
+            "name": "测试", 
+            "url": "http://mp.weixin.qq.com/", 
+            "appid": "wxc06f08cd947ff16a", 
+            "pagepath": "/pages/index/index"
+        }
+    ]
+}
+
 ###
 GET https://api.mch.weixin.qq.com/v3/pay/transactions/id/4200001739202302179611135797?mchid=1637520134 HTTP/1.1
 Content-Type: application/json
