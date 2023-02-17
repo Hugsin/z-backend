@@ -1,0 +1,88 @@
+POST http://localhost:8000/open/native/ HTTP/1.1
+Content-Type: application/json
+
+{
+
+}
+
+### jsapi 下单
+POST http://localhost:8000/open/wechatpay/v3/pay/transactions/jsapi HTTP/1.1
+Content-Type: application/json
+Accept: application/json, text/plain, */*
+
+{
+    "description": "测试商品",
+    "out_trade_no": "26a4435196871ff30d20230216124234",
+    "notify_url": "https://www.tigerzh.com/api/open/notify",
+    "goods_tag": "asdfasf",
+    "support_fapiao": false,
+    "amount": {
+        "total": 1,
+        "currency": "CNY"
+    },
+    "payer": {
+		"openid": "ouGWL5htUfPCgH02DDC-q4XaLOb0"
+	}
+}
+### 调起支付
+POST http://localhost:8000/open/wechatpay/v3/pay/transactions/native HTTP/1.1
+Content-Type: application/json
+Accept: application/json, text/plain, */*
+
+{
+    "description": "测试商品",
+    "out_trade_no": "26a4435196871ff30d20230216124233",
+    "notify_url": "https://www.tigerzh.com/api/open/notify",
+    "goods_tag": "asdfasf",
+    "support_fapiao": false,
+    "amount": {
+        "total": 1,
+        "currency": "CNY"
+    }
+}
+
+### 查询订单
+GET http://localhost:8000/open/wechatpay/v3/pay/transactions/id/4200001739202302179611135797?mchid=1637520134 HTTP/1.1
+Content-Type: application/json
+### 查询投诉单列表API
+GET http://localhost:8000/open/wechatpay/v3/merchant-service/complaints-v2?begin_date=2023-02-11&end_date=2023-02-12 HTTP/1.1
+Content-Type: application/json
+### 获取token
+GET http://localhost:8000/open/wechatmp/cgi-bin/get_current_selfmenu_info HTTP/1.1
+###
+GET https://api.mch.weixin.qq.com/v3/pay/transactions/id/4200001739202302179611135797?mchid=1637520134 HTTP/1.1
+Content-Type: application/json
+Accept: application/json, text/plain, */*,
+Authorization: 'WECHATPAY2-SHA256-RSA2048 mchid="1637520134",nonce_str="1C01489D99F1471F9EDAEA043F2E6DCE",signature="aTMiRbllFt6iXZBeYgH0gS4Z+YpUufEyZ7OOgAGcZPHfSBDfXJHoDVVPZjVkYlOr5V20Ejwftysr+q4JQJd/fkZdYqm736cZWSwIjXJk2/cJjVqGumQuK873CIQ9CCyoLnzmuBubIqCdctV64M1/3inybZ96n5n4jYfzuTmGmlOMKdyQINuZsMXyGmwlnkzqutp+yjZVz6+CwRA6q5OaX+4u8mZswHv3B0+w0TfunFfbnkyW9ILSD9WNxrk6OdmgH3ZVrC6eDrlX3WSfMZ/SU9a/OAs+3ZEb+2+TDFfW+bmy2mz1NhJQvryrZLxI8zn9hSVTYNLYBcp/uY7luBbw2A==",timestamp="1676613424",serial_no="317F5F4B9EBCB8869618B17E3F9A0B1B63E90DAE"'
+ 
+###
+POST http://localhost:8000/open/notify/ HTTP/1.1
+Content-Type: application/json
+
+###
+POST https://api.mch.weixin.qq.com/v3/pay/transactions/native HTTP/1.1
+Content-Length: 342,
+Content-Type: application/json,
+User-Agent: vscode-restclient,
+Accept: application/json, text/plain, */*,
+Accept-Encoding: gzip, deflate,
+Connection: close,
+Authorization: WECHATPAY2-SHA256-RSA2048 mchid="1637520134",nonce_str="758F12F59EEC4D979ED55F9D38ACCCD9",signature="ZMlCKULwHFf+SaLdBugyfw9VyMPftcOZ7I1qH5BvAxp2R+U5BUUCoP4cA1vFiU/32Dz2DO3WN6JQdS7rI1dPLnHQohIlKTIAKPg7dkOaNALT/CWTSk8PevLDCIO/R1YFwivv+IQf6POSDdicYJtgRM3lkPOC4OewdV4iGqe4q6olWrU2aWdnDQZoDbfeZcsnOJpCraHRtqOfhMadOXHIB5lx8jCEm1gUzjniuf3W+VCWXGPoR918OqddWlB356oLTtW6+EqWP3dBa57kmw3i6uQiCBQoj0FPEFoLryt2XKDTHL1zntgoNbuxbSzQV/5TkD7dZUeI2Ag8M06wHJWe9Q==",timestamp="1676598892",serial_no="317F5F4B9EBCB8869618B17E3F9A0B1B63E90DAE"
+
+
+{
+    "appid": "wxce121790d27bf5ba",
+    "mchid": "1637520134",
+    "description": "测试商品",
+    "out_trade_no": "26a4435196871ff30d20230216124230",
+    "notify_url": "https://www.tigerzh.com/api/open/notify",
+    "goods_tag": "asdfasf",
+    "support_fapiao": false,
+    "amount": {
+        "total": 1,
+        "currency": "CNY"
+    }
+}
+
+
+

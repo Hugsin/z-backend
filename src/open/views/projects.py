@@ -15,7 +15,7 @@ class ProjectsSerializer(CustomModelSerializer):
     class Meta:
         model = Projects
         fields = "__all__"
-        read_only_fields = ["id"]
+        read_only_fields = ["id"]  
 
 
 class ProjectsViewSet(CustomModelViewSet):

@@ -132,7 +132,7 @@ class LoginTokenSerializer(TokenObtainPairSerializer):
 
     def validate(self, attrs):
         if not getattr(settings, "LOGIN_NO_CAPTCHA_AUTH", False):
-            return {"code": 4000, "msg": "该接口暂未开通!", "data": None}
+            return {"code": 400, "msg": "该接口暂未开通!", "data": None}
         data = super().validate(attrs)
         data["name"] = self.user.name
         data["userId"] = self.user.id

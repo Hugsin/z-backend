@@ -24,7 +24,7 @@ def CustomExceptionHandler(ex, context):
     :return:
     """
     msg = ''
-    code = 4000
+    code = 400
 
     if isinstance(ex, AuthenticationFailed):
         code = 401

@@ -25,3 +25,11 @@ class Projects(CoreModel):
         verbose_name = "项目表"
         verbose_name_plural = verbose_name
         ordering = ("order_num",)
+
+
+class WechatPayOrder(CoreModel):
+    desc = models.CharField(max_length=2000, verbose_name='描述')
+    class Meta:
+        db_table = table_prefix + "order"
+        verbose_name = "订单表"
+        verbose_name_plural = verbose_name
