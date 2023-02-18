@@ -25,9 +25,9 @@ class WechatViewSet(ModelViewSet):
     permission_classes = []
     serializer_class = WeChatPaySerializer
 
-    def mp_message(self, request, path):
+    def mp_message(self, request):
         """微信公众号消息"""
-        echostr = request.query_params.get('echostr')
+        echostr = request.GET.get('echostr')
         if echostr:
             return HttpResponse(echostr)
         else:
@@ -35,7 +35,7 @@ class WechatViewSet(ModelViewSet):
             # resposne = we_chat_mp_request(request)
             return DetailResponse('')
 
-    def mp_request(self, request, path):
+    def mp_request(self, request):
         """微信公众号"""
         resposne = we_chat_mp_request(request)
         return DetailResponse(resposne)
