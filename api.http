@@ -67,6 +67,9 @@ Content-Type: application/json
         }
     ]
 }
+###
+GET http://localhost:8000/open/mpMessage?signature=34d77a55488100b5b932e73400c27ad8c01f3b22&timestamp=1676712988&nonce=148406132&openid=ouGWL5htUfPCgH02DDC-q4XaLOb0 HTTP/1.1
+
 
 ###
 GET https://api.mch.weixin.qq.com/v3/pay/transactions/id/4200001739202302179611135797?mchid=1637520134 HTTP/1.1
