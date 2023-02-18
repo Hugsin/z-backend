@@ -5,6 +5,7 @@ import json
 import requests
 import uuid
 import time
+import hashlib
 from copy import deepcopy
 from datetime import datetime
 from urllib.parse import urlencode
@@ -30,6 +31,24 @@ with open(str(BASE_DIR)+'/cert/apiclient_key.pem') as f:
     f.close()
 
 # 微信公众号相关
+
+
+def verify_mp_config(request):
+    """微信公众号配置验证"""
+    signature = request.query_params.get('signature')
+    timestamp = request.query_params.get('timestamp')
+    nonce = request.query_params.get('nonce')
+    echostr = request.query_params.get('echostr')
+    if echostr != None:
+        auth_list = [WECHAT_PAY_V3KEY, timestamp, nonce]
+        auth_list.sort()
+        signature_str = (''.join(auth_list))
+        sha = hashlib.sha1(signature_str.encode('utf-8'))
+        encrypts = sha.hexdigest()
+        if encrypts == signature:
+            return echostr
+    else:
+        return False
 
 
 def we_chat_mp_assess_token_task():

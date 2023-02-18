@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from src.utils.serializers import CustomModelSerializer
 from src.open.models import WechatPayOrder
 from django.http import HttpResponse
-from src.utils.wechat_util import we_chat_pay_request, we_chat_pay_verify_notify, we_chat_mp_request, we_chat_mp_assess_token_task
+from src.utils.wechat_util import we_chat_pay_request, we_chat_pay_verify_notify, we_chat_mp_request, verify_mp_config
 
 
 class WeChatPaySerializer(CustomModelSerializer):
@@ -25,20 +25,21 @@ class WechatViewSet(ModelViewSet):
     permission_classes = []
     serializer_class = WeChatPaySerializer
 
+    def mp_request(self, request, path):
+        """微信公众号"""
+        resposne = we_chat_mp_request(request)
+        return DetailResponse(resposne)
+
     def mp_message(self, request):
         """微信公众号消息"""
         echostr = request.GET.get('echostr')
-        if echostr:
+        result = verify_mp_config(request)
+        if result:
             return HttpResponse(echostr)
         else:
             # TODO 处理消息
             # resposne = we_chat_mp_request(request)
             return DetailResponse('')
-
-    def mp_request(self, request):
-        """微信公众号"""
-        resposne = we_chat_mp_request(request)
-        return DetailResponse(resposne)
 
     def pay_requeset(self, request, path):
         """微信支付API"""
