@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 import sys
 from pathlib import Path
+from datetime import timedelta
+from conf.env import *
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,23 +23,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ******************** 动态配置 ******************** #
 # ================================================= #
 
-from conf.env import *
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure--z8%exyzt7e_%i@1+#1mm=%lb5=^fx_57=1@a+_y7bg5-w%)sm"
-# 初始化plugins插件路径到环境变量中
-PLUGINS_PATH = os.path.join(BASE_DIR, "plugins")
-sys.path.insert(0, os.path.join(PLUGINS_PATH))
-
-[
-    sys.path.insert(0, os.path.join(PLUGINS_PATH, ele))
-    for ele in os.listdir(PLUGINS_PATH)
-    if os.path.isdir(os.path.join(PLUGINS_PATH, ele)) and not ele.startswith("__")
-]
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = locals().get("DEBUG", True)
 ALLOWED_HOSTS = locals().get("ALLOWED_HOSTS", ["*"])
@@ -46,6 +37,7 @@ ALLOWED_HOSTS = locals().get("ALLOWED_HOSTS", ["*"])
 
 INSTALLED_APPS = [
     "django.contrib.auth",
+    'django.contrib.admin',
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
@@ -53,12 +45,15 @@ INSTALLED_APPS = [
     "django_comment_migrate",
     "rest_framework",
     "django_filters",
+    "django_redis",
     "corsheaders",  # 注册跨域app
     "src.system",
     "src.open",
     "drf_yasg",
     "captcha",
     'channels',
+    'django_celery_results',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -108,6 +103,18 @@ DATABASES = {
         "PORT": DATABASE_PORT,
     }
 }
+REDIS_URL = f'redis://:{REDIS_PASSWORD if REDIS_PASSWORD else ""}@{os.getenv("REDIS_HOST") or REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}'
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_URL,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            'CONNECTION_POOL_CLASS': 'redis.ConnectionPool',
+        }
+    },
+}
+
 AUTH_USER_MODEL = "system.Users"
 USERNAME_FIELD = "username"
 
@@ -294,6 +301,11 @@ REST_FRAMEWORK = {
         # 'rest_framework.permissions.IsAuthenticatedOrReadOnly', # 有身份 或者 只读访问(self.list,self.retrieve)
     ],
     "EXCEPTION_HANDLER": "src.utils.exception.CustomExceptionHandler",  # 自定义的异常处理
+    # 限流
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '60/min',
+        'user': '600/min'
+    }
 }
 # ================================================= #
 # ******************** 登录方式配置 ******************** #
@@ -303,7 +315,6 @@ AUTHENTICATION_BACKENDS = ["src.utils.backends.CustomBackend"]
 # ================================================= #
 # ****************** simplejwt配置 ***************** #
 # ================================================= #
-from datetime import timedelta
 
 SIMPLE_JWT = {
     # token有效时长
@@ -349,10 +360,10 @@ CAPTCHA_TIMEOUT = 1  # 超时(minutes)
 CAPTCHA_OUTPUT_FORMAT = "%(image)s %(text_field)s %(hidden_field)s "
 CAPTCHA_FONT_SIZE = 40  # 字体大小
 CAPTCHA_FOREGROUND_COLOR = "#64DAAA"  # 前景色
-CAPTCHA_BACKGROUND_COLOR = "#F5F7F4"  # 背景色
+CAPTCHA_BACKGROUND_COLOR = "#FAFAFA"  # 背景色
 CAPTCHA_NOISE_FUNCTIONS = (
     "captcha.helpers.noise_arcs",  # 线
-    # "captcha.helpers.noise_dots",  # 点
+    "captcha.helpers.noise_dots",  # 点
 )
 # CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge' #字母验证码
 CAPTCHA_CHALLENGE_FUNCT = "captcha.helpers.math_challenge"  # 加减乘除验证码
@@ -373,6 +384,23 @@ API_MODEL_MAP = {
 
 DJANGO_CELERY_BEAT_TZ_AWARE = False
 CELERY_TIMEZONE = "Asia/Shanghai"  # celery 时区问题
+
+BROKER_URL = f'redis://:{REDIS_PASSWORD if REDIS_PASSWORD else ""}@{os.getenv("REDIS_HOST") or REDIS_HOST}:' \
+             f'{REDIS_PORT}/{locals().get("CELERY_DB", 2)}'  # Broker使用Redis
+CELERY_RESULT_BACKEND = "django-db"
+# celery内容等消息的格式设置，默认json
+CELERY_ACCEPT_CONTENT = ['application/json', ]
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_BEAT_SCHEDULE = {
+    # 每周一早上7点半执行
+    'get_we_chat_mp_assess_token_task': {
+        'task': 'app.tasks.get_we_chat_mp_assess_token_task',
+    },
+}
+# CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+# CELERY_BROKER_URL = f'{REDIS_URL}/0'
 # 静态页面压缩
 STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
@@ -387,17 +415,3 @@ TABLE_PREFIX = locals().get('TABLE_PREFIX', "")
 SYSTEM_CONFIG = {}
 # 字典配置
 DICTIONARY_CONFIG = {}
-
-# ================================================= #
-# ******************** 插件配置 ******************** #
-# ================================================= #
-# 租户共享app
-TENANT_SHARED_APPS = []
-# 插件 urlpatterns
-PLUGINS_URL_PATTERNS = []
-# ********** 一键导入插件配置开始 **********
-# 例如:
-# from src_upgrade_center.settings import *    # 升级中心
-# from src_celery.settings import *            # celery 异步任务
-# ...
-# ********** 一键导入插件配置结束 **********

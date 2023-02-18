@@ -1,3 +1,4 @@
+# setup
 ``` 
 1. 进入项目目录 cd backend
 2. cd conf/env.py
@@ -17,4 +18,17 @@
 	python3 manage.py runserver 0.0.0.0:8000
 或使用 daphne :
   daphne -b 0.0.0.0 -p 8000 application.asgi:application
+```
+# command
+```
+# 命令行调试
+python manage.py shell
+from django.core.cache import cache #引入缓存模块 
+cache.set('key','value',3600) # 写入key缓存一小时
+cache.get('key') # 获取key  => value
+cache.has_key('key') #是否存在key => True
+# 启动周期性任务
+Celery -A application beat -l info
+# 去重生成requirements.txt文件
+pip3 freeze | sort | uniq > requirements.txt
 ```

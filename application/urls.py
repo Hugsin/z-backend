@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.contrib import admin
 from django.conf.urls.static import static
 from django.urls import path, include, re_path
 from drf_yasg import openapi
@@ -54,36 +55,37 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = (
-        [
-            re_path(
-                r"^swagger(?P<format>\.json|\.yaml)$",
-                schema_view.without_ui(cache_timeout=0),
-                name="schema-json",
-            ),
-            path(
-                "",
-                schema_view.with_ui("swagger", cache_timeout=0),
-                name="schema-swagger-ui",
-            ),
-            path(
-                r"redoc/",
-                schema_view.with_ui("redoc", cache_timeout=0),
-                name="schema-redoc",
-            ),
-            path("system/", include("src.system.urls")),
-            path("open/", include("src.open.urls")),
-            path("login/", LoginView.as_view(), name="token_obtain_pair"),
-            path("logout/", LogoutView.as_view(), name="token_obtain_pair"),
-            path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-            re_path(
-                r"^api-auth/", include("rest_framework.urls", namespace="rest_framework")
-            ),
-            path("captcha/", CaptchaView.as_view()),
-            path("init/dictionary/", InitDictionaryViewSet.as_view()),
-            path("init/settings/", InitSettingsViewSet.as_view()),
-            path("apiLogin/", ApiLogin.as_view()),
-        ]
-        + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-        + static(settings.STATIC_URL, document_root=settings.STATIC_URL)
-        + [re_path(ele.get('re_path'), include(ele.get('include'))) for ele in settings.PLUGINS_URL_PATTERNS]
-)
+    [
+        re_path(
+            r"^swagger(?P<format>\.json|\.yaml)$",
+            schema_view.without_ui(cache_timeout=0),
+            name="schema-json",
+        ),
+        path(
+            "",
+            schema_view.with_ui("swagger", cache_timeout=0),
+            name="schema-swagger-ui",
+        ),
+        path(
+            r"redoc/",
+            schema_view.with_ui("redoc", cache_timeout=0),
+            name="schema-redoc",
+        ),
+        path("system/", include("src.system.urls")),
+        path("open/", include("src.open.urls")),
+        path("login/", LoginView.as_view(), name="token_obtain_pair"),
+        path("logout/", LogoutView.as_view(), name="token_obtain_pair"),
+        path("token/refresh/", TokenRefreshView.as_view(),
+             name="token_refresh"),
+        re_path(
+            r"^api-auth/", include("rest_framework.urls",
+                                   namespace="rest_framework")
+        ),
+        path("captcha/", CaptchaView.as_view()),
+        path("init/dictionary/", InitDictionaryViewSet.as_view()),
+        path("init/settings/", InitSettingsViewSet.as_view()),
+        path("apiLogin/", ApiLogin.as_view()),
+        re_path(r'^admin/', admin.site.urls),
+    ]
+    + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    + static(settings.STATIC_URL, document_root=settings.STATIC_URL))

@@ -47,8 +47,13 @@ Content-Type: application/json
 ### 查询投诉单列表API
 GET http://localhost:8000/open/wechatpay/v3/merchant-service/complaints-v2?begin_date=2023-02-11&end_date=2023-02-12 HTTP/1.1
 Content-Type: application/json
-### 获取token
-GET http://localhost:8000/open/wechatmp/cgi-bin/menu/create HTTP/1.1
+###
+POST https://api.weixin.qq.com/cgi-bin/menu/create HTTP/1.1
+Content-Type: application/json
+
+{"button": [{"type": "miniprogram", "name": "\u6d4b\u8bd5", "url": "http://mp.weixin.qq.com/", "appid": "wxc06f08cd947ff16a", "pagepath": "/pages/index/index"}]}
+### 公众号接口
+get http://localhost:8000/open/wechatmp/cgi-bin/get_current_selfmenu_info HTTP/1.1
 Content-Type: application/json
 
 {

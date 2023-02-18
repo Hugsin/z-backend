@@ -6,7 +6,8 @@ from src.utils.json_response import DetailResponse, SuccessResponse, ErrorRespon
 from rest_framework.response import Response
 from src.utils.serializers import CustomModelSerializer
 from src.open.models import WechatPayOrder
-from src.utils.wechat_util import we_chat_pay_request, we_chat_pay_verify_notify, we_chat_mp_request
+from django.http import HttpResponse
+from src.utils.wechat_util import we_chat_pay_request, we_chat_pay_verify_notify, we_chat_mp_request, we_chat_mp_assess_token_task
 
 
 class WeChatPaySerializer(CustomModelSerializer):
@@ -24,7 +25,18 @@ class WechatViewSet(ModelViewSet):
     permission_classes = []
     serializer_class = WeChatPaySerializer
 
+    def mp_message(self, request, path):
+        """微信公众号消息"""
+        echostr = request.query_params.get('echostr')
+        if echostr:
+            return HttpResponse(echostr)
+        else:
+            # TODO 处理消息
+            # resposne = we_chat_mp_request(request)
+            return DetailResponse('')
+
     def mp_request(self, request, path):
+        """微信公众号"""
         resposne = we_chat_mp_request(request)
         return DetailResponse(resposne)
 
@@ -33,8 +45,8 @@ class WechatViewSet(ModelViewSet):
         authorization = we_chat_pay_request(request)
         return DetailResponse(authorization)
 
-    def pay_notify(self, request):
-        """接受通知"""
+    def pay_message(self, request):
+        """微信支付消息"""
         result = we_chat_pay_verify_notify(request)
         if result and result.get('event_type') == 'TRANSACTION.SUCCESS':
             resp = result.get('resource')

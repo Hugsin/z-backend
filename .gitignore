@@ -99,3 +99,4 @@ media/
 __pypackages__/
 package-lock.json
 cert/
+celerybeat-schedule.db

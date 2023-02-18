@@ -11,6 +11,7 @@ from urllib.parse import urlencode
 from user_agents import parse
 from base64 import b64decode, b64encode
 from logging import getLogger
+from django.core.cache import cache  # 引入缓存模块
 from application.settings import WECHAT_PAY_URL, WECHAT_PAY_MCHID, WECHAT_MP_APPID, BASE_DIR, WECHAT_PAY_CERT_NO, WECHAT_PAY_V3KEY, WECHAT_MP_URL, WECHAT_MP_SECRET
 from cryptography.exceptions import InvalidSignature, InvalidTag
 from cryptography.hazmat.backends import default_backend
@@ -31,16 +32,41 @@ with open(str(BASE_DIR)+'/cert/apiclient_key.pem') as f:
 # 微信公众号相关
 
 
-def we_chat_mp_request(request):
+def we_chat_mp_assess_token_task():
+    params = {
+        'grant_type': 'client_credential',
+        'appid': WECHAT_MP_APPID,
+        'secret': WECHAT_MP_SECRET
+    }
+    headers = {
+        'Content-Type': 'application/json; encoding=utf-8'
+    }
     try:
+        response = requests.get(url=f'{WECHAT_MP_URL}/cgi-bin/token',
+                                params=params, headers=headers)
+        data = response.json()
+        access_token = data.get('access_token')
+        expires_in = data.get('expires_in')
+        cache.set('access_token', access_token, expires_in)
+        return response.json()
+    except Exception as e:
+        return False
+
+
+def we_chat_mp_request(request):
+    """微信公公众号集成"""
+    try:
+        access_token = cache.get('access_token')
+        if not access_token:
+            we_chat_mp_assess_token_task()
         headers = (request.headers)
         data = json.loads((request.body)) if request.body else {}
         data = json.dumps(data)
         method = request.method
         params = deepcopy(request.GET)
-        params['access_token'] = "65_fPnhFDf3-TiBUPGpLfoDRkx4iOQrCOK8wfzxPsz1AGxZnH6Asp-Ik4k6MG-9qDUVJXXXUugLiUKdyz41M74xAQIGOwcSOcgMVQLToKJzCOcMKHuH2PRorBNzmnsNELhADAARY"
+        params['access_token'] = cache.get('access_token')
         path = str(request.path).rsplit('wechatmp', 1)[-1]
-        url = '%s%s' % (WECHAT_MP_URL, path)
+        url = f'{WECHAT_MP_URL}{path}'
         response = requests.request(
             method=method,
             url=url,
@@ -81,7 +107,7 @@ def we_chat_pay_verify_notify(request):
             return None
         algorithm = resource.get('algorithm')
         if algorithm != 'AEAD_AES_256_GCM':
-            raise Exception('wechatpayv3 does not support this algorithm')
+            raise Exception('does not support this algorithm')
         nonce = resource.get('nonce')
         ciphertext = resource.get('ciphertext')
         associated_data = resource.get('associated_data')
@@ -123,8 +149,8 @@ def we_chat_pay_request(request):
         path = request.path
         path = str(path).rsplit('wechatpay', 1)[-1]
         # url 拼接
-        params_str = '?%s' % (urlencode(params)) if urlencode(params) else ''
-        url = '%s%s%s' % (WECHAT_PAY_URL, path, params_str)
+        params_str = f'?{urlencode(params)}' if urlencode(params) else ''
+        url = f'{WECHAT_PAY_URL}{path}{params_str}'
         search = path+params_str
         # 签名
         authorization = build_authorization(search, method,
@@ -134,7 +160,6 @@ def we_chat_pay_request(request):
             'Authorization': authorization,
             'Content-Type': request.headers['Content-Type']
         }
-        print('asdf', url, params, data)
         # 请求微信支付接口
         response = requests.request(
             method=method, url=url, params=params, data=data, headers=headers)
