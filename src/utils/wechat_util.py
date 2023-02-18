@@ -66,7 +66,8 @@ def we_chat_mp_assess_token_task():
         data = response.json()
         access_token = data.get('access_token')
         expires_in = data.get('expires_in')
-        cache.set('access_token', access_token, expires_in)
+        if (access_token):
+            cache.set('access_token', access_token, expires_in)
         return response.json()
     except Exception as e:
         return False
@@ -77,22 +78,26 @@ def we_chat_mp_request(request):
     try:
         access_token = cache.get('access_token')
         if not access_token:
-            we_chat_mp_assess_token_task()
-        headers = (request.headers)
-        data = json.loads((request.body)) if request.body else {}
-        data = json.dumps(data)
-        method = request.method
-        params = deepcopy(request.GET)
-        params['access_token'] = cache.get('access_token')
-        path = str(request.path).rsplit('wechatmp', 1)[-1]
-        url = f'{WECHAT_MP_URL}{path}'
-        response = requests.request(
-            method=method,
-            url=url,
-            params=params,
-            data=data,
-            headers=headers)
-        return response.json()
+            result = we_chat_mp_assess_token_task()
+        access_token = cache.get('access_token')
+        if access_token:
+            headers = (request.headers)
+            data = json.loads((request.body)) if request.body else {}
+            data = json.dumps(data)
+            method = request.method
+            params = deepcopy(request.GET)
+            params['access_token'] = cache.get('access_token')
+            path = str(request.path).rsplit('wechatmp', 1)[-1]
+            url = f'{WECHAT_MP_URL}{path}'
+            response = requests.request(
+                method=method,
+                url=url,
+                params=params,
+                data=data,
+                headers=headers)
+            return response.json()
+        else:
+            return result
     except Exception as e:
         # 处理异常情况
         return 'Fail Request %s' % (e)
