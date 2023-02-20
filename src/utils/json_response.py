@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 
-
 from rest_framework.response import Response
 
 
@@ -12,7 +11,7 @@ class SuccessResponse(Response):
     """
 
     def __init__(self, data=None, msg='success', status=None, template_name=None, headers=None, exception=False,
-                 content_type=None,page=1,limit=1,total=1):
+                 content_type=None, page=1, limit=1, total=1):
         std_data = {
             "code": 200,
             "data": {
@@ -32,10 +31,10 @@ class DetailResponse(Response):
     (1)默认code返回200, 不支持指定其他返回码
     """
 
-    def __init__(self, data=None, msg='success', status=None, template_name=None, headers=None, exception=False,
+    def __init__(self, data=None, code=200, msg='success', status=None, template_name=None, headers=None, exception=False,
                  content_type=None,):
         std_data = {
-            "code": 200,
+            "code": code,
             "data": data,
             "msg": msg
         }

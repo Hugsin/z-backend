@@ -27,8 +27,8 @@ class WechatViewSet(ModelViewSet):
 
     def mp_request(self, request, path):
         """微信公众号"""
-        resposne = we_chat_mp_request(request)
-        return DetailResponse(resposne)
+        data = we_chat_mp_request(request)
+        return DetailResponse(data=json.loads(data))
 
     def mp_message(self, request):
         """微信公众号消息"""
@@ -39,12 +39,12 @@ class WechatViewSet(ModelViewSet):
         else:
             # TODO 处理消息
             # resposne = we_chat_mp_request(request)
-            return DetailResponse('')
+            return HttpResponse('')
 
     def pay_requeset(self, request, path):
         """微信支付API"""
-        authorization = we_chat_pay_request(request)
-        return DetailResponse(authorization)
+        data = we_chat_pay_request(request)
+        return DetailResponse(data=json.loads(data))
 
     def pay_message(self, request):
         """微信支付消息"""
