@@ -189,8 +189,6 @@ def we_chat_pay_request(request):
         url = f'{WECHAT_PAY_URL}{path}'
         search = path+params_str
         # 签名
-        print('签名参数=====>', search, method,
-              WECHAT_PAY_MCHID, WECHAT_PAY_CERT_NO, PRIVATE_KEY, data)
         authorization = build_authorization(search, method,
                                             WECHAT_PAY_MCHID, WECHAT_PAY_CERT_NO, PRIVATE_KEY, data)
         # 设置签名到header
@@ -198,8 +196,6 @@ def we_chat_pay_request(request):
             'Authorization': authorization,
             'Content-Type': request.headers['Content-Type']
         }
-        print('请求参数=====>', method, url,
-              params, data, headers)
         # 请求微信支付接口
         return do_request(
             method=method, url=url, headers=headers, params=params, data=data)
