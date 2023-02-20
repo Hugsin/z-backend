@@ -105,3 +105,7 @@ curl 'https://webapi.jutuike.com/user/info' \
   -H 'user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36' \
   -H 'xx-token: B0570sJslG2eVkw7qTyWWk5bC99mIwdR' \
   --compressed
+
+###
+GET http://localhost:8000/qrlogin/ HTTP/1.1
+    

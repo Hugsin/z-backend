@@ -63,11 +63,14 @@ class WechatViewSet(ModelViewSet):
     """
     """
     serializer_class = WeChatPaySerializer
+    permission_classes = []
 
     def mp_request(self, request, path):
         """微信公众号"""
         data = we_chat_mp_request(request)
-        return DetailResponse(data=json.loads(data))
+        if isinstance(data, str):
+            data = json.loads(data)
+        return DetailResponse(data=data)
 
     def pay_requeset(self, request, path):
         """微信支付API"""

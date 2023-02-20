@@ -27,31 +27,35 @@ from src.open.views.wehcat import we_chat_mp_request
 from django.http import HttpResponse
 
 
-def qrlogin(request):
-    hashkey = CaptchaStore.generate_key()
-    row = CaptchaStore.objects.filter(hashkey=hashkey).first()
-    id = row.id
+class QrLoginView(APIView):
+    authentication_classes = []
+    permission_classes = []
 
-    class requestss():
-        method = 'POST'
-        headers = {}
-        GET = {}
-        accepted_renderer = {}
-        path = '/wechatmp/cgi-bin/qrcode/create'
-        body = '{"expire_seconds":2592000,"action_name":"QR_SCENE","action_info":{"scene":{"scene_id":%s}}}' % (
-            hashkey)
+    class FakeRequest():
+        def __init__(self, hashkey) -> None:
+            self.method = 'POST'
+            self.headers = {}
+            self.GET = {}
+            self.accepted_renderer = {}
+            self.path = '/wechatmp/cgi-bin/qrcode/create'
+            self.body = '{"expire_seconds":2592000,"action_name":"QR_SCENE","action_info":{"scene":{"scene_id":"%s"}}}' % (
+                hashkey)
 
-    response = we_chat_mp_request(requestss)
-    # response = json.loads(response)
-    # ticket = response['ticket']
-    # print(ticket)
-    image_code = CaptchaStore.objects.filter(id=id).first()
-    image_code and image_code.delete()
-    return HttpResponse(response)
-    # return HttpResponse({
-    #     'url': f'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket={ticket}',
-    #     'scence_id': id
-    # })
+    def get(self, request):
+        hashkey = CaptchaStore.generate_key()
+        row = CaptchaStore.objects.filter(hashkey=hashkey).first()
+        id = row.id
+        _request = self.FakeRequest(hashkey)
+        print(_request.body)
+        response = we_chat_mp_request(_request)
+        print('response', response)
+        response = json.loads(response)
+        ticket = response['ticket']
+        # print(ticket)
+        return DetailResponse(data={
+            'url': f'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket={ticket}',
+            'scence_id': id
+        })
 
 
 class CaptchaView(APIView):

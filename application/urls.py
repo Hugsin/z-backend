@@ -28,10 +28,11 @@ from application import settings
 from src.system.views.dictionary import InitDictionaryViewSet
 from src.system.views.login import (
     LoginView,
+    QrLoginView,
     CaptchaView,
     ApiLogin,
     LogoutView,
-    qrlogin
+
 )
 from src.system.views.system_config import InitSettingsViewSet
 from src.utils.swagger import CustomOpenAPISchemaGenerator
@@ -83,7 +84,7 @@ urlpatterns = (
                                    namespace="rest_framework")
         ),
         path("captcha/", CaptchaView.as_view()),
-        path("qrlogin/", qrlogin),
+        path("qrlogin/", QrLoginView.as_view()),
         # path("qrlogin/", CaptchaView.as_view({'get', 'qrlogin'})),
         path("init/dictionary/", InitDictionaryViewSet.as_view()),
         path("init/settings/", InitSettingsViewSet.as_view()),
