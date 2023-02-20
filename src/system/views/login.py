@@ -1,5 +1,6 @@
 import base64
 import hashlib
+import json
 from datetime import datetime, timedelta
 
 from captcha.views import CaptchaStore, captcha_image
@@ -22,6 +23,35 @@ from src.utils.json_response import ErrorResponse, DetailResponse
 from src.utils.request_util import save_login_log
 from src.utils.serializers import CustomModelSerializer
 from src.utils.validator import CustomValidationError
+from src.open.views.wehcat import we_chat_mp_request
+from django.http import HttpResponse
+
+
+def qrlogin(request):
+    hashkey = CaptchaStore.generate_key()
+    row = CaptchaStore.objects.filter(hashkey=hashkey).first()
+    id = row.id
+
+    class requestss():
+        method = 'POST'
+        headers = {}
+        GET = {}
+        accepted_renderer = {}
+        path = '/wechatmp/cgi-bin/qrcode/create'
+        body = '{"expire_seconds":2592000,"action_name":"QR_SCENE","action_info":{"scene":{"scene_id":%s}}}' % (
+            hashkey)
+
+    response = we_chat_mp_request(requestss)
+    # response = json.loads(response)
+    # ticket = response['ticket']
+    # print(ticket)
+    image_code = CaptchaStore.objects.filter(id=id).first()
+    image_code and image_code.delete()
+    return HttpResponse(response)
+    # return HttpResponse({
+    #     'url': f'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket={ticket}',
+    #     'scence_id': id
+    # })
 
 
 class CaptchaView(APIView):

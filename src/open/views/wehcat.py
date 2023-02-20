@@ -19,16 +19,11 @@ class WeChatPaySerializer(CustomModelSerializer):
         fields = "__all__"
 
 
-class WechatViewSet(ModelViewSet):
+class WechatMessageViewSet(ModelViewSet):
     """
     """
     permission_classes = []
     serializer_class = WeChatPaySerializer
-
-    def mp_request(self, request, path):
-        """微信公众号"""
-        data = we_chat_mp_request(request)
-        return DetailResponse(data=json.loads(data))
 
     def mp_message(self, request):
         """微信公众号消息"""
@@ -40,11 +35,6 @@ class WechatViewSet(ModelViewSet):
             # TODO 处理消息
             # resposne = we_chat_mp_request(request)
             return HttpResponse('')
-
-    def pay_requeset(self, request, path):
-        """微信支付API"""
-        data = we_chat_pay_request(request)
-        return DetailResponse(data=json.loads(data))
 
     def pay_message(self, request):
         """微信支付消息"""
@@ -67,3 +57,19 @@ class WechatViewSet(ModelViewSet):
             return Response({'code': 'SUCCESS', 'message': '成功'})
         else:
             return Response({'code': 'FAILED', 'message': '失败'})
+
+
+class WechatViewSet(ModelViewSet):
+    """
+    """
+    serializer_class = WeChatPaySerializer
+
+    def mp_request(self, request, path):
+        """微信公众号"""
+        data = we_chat_mp_request(request)
+        return DetailResponse(data=json.loads(data))
+
+    def pay_requeset(self, request, path):
+        """微信支付API"""
+        data = we_chat_pay_request(request)
+        return DetailResponse(data=json.loads(data))

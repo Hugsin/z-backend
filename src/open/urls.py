@@ -2,7 +2,7 @@ from django.urls import re_path, path
 from rest_framework import routers
 
 from src.open.views.projects import ProjectsViewSet
-from src.open.views.wehcat import WechatViewSet
+from src.open.views.wehcat import WechatViewSet,WechatMessageViewSet
 
 system_url = routers.SimpleRouter()
 system_url.register(r'projects', ProjectsViewSet)
@@ -22,11 +22,11 @@ urlpatterns = [
         'patch': 'mp_request',
         'delete': 'mp_request',
     })),
-    path(r'payMessage', WechatViewSet.as_view({
+    path(r'payMessage', WechatMessageViewSet.as_view({
         'get': 'pay_message',
         'post': 'pay_message',
     })),
-     path(r'mpMessage', WechatViewSet.as_view({
+     path(r'mpMessage', WechatMessageViewSet.as_view({
         'get': 'mp_message',
         'post': 'mp_message',
     })),

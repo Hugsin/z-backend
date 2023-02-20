@@ -4,14 +4,6 @@ from django.conf import settings
 from django.db import connection
 
 
-def is_tenants_mode():
-    """
-    判断是否为租户模式
-    :return:
-    """
-    return hasattr(connection, "tenant") and connection.tenant.schema_name
-
-
 # ================================================= #
 # ******************** 初始化 ******************** #
 # ================================================= #
@@ -68,14 +60,7 @@ def init_dictionary():
     :return:
     """
     try:
-        if is_tenants_mode():
-            from django_tenants.utils import tenant_context, get_tenant_model
-
-            for tenant in get_tenant_model().objects.filter():
-                with tenant_context(tenant):
-                    settings.DICTIONARY_CONFIG[connection.tenant.schema_name] = _get_all_dictionary()
-        else:
-            settings.DICTIONARY_CONFIG = _get_all_dictionary()
+        settings.DICTIONARY_CONFIG = _get_all_dictionary()
     except Exception as e:
         print("请先进行数据库迁移!")
     return
@@ -88,15 +73,7 @@ def init_system_config():
     :return:
     """
     try:
-
-        if is_tenants_mode():
-            from django_tenants.utils import tenant_context, get_tenant_model
-
-            for tenant in get_tenant_model().objects.filter():
-                with tenant_context(tenant):
-                    settings.SYSTEM_CONFIG[connection.tenant.schema_name] = _get_all_system_config()
-        else:
-            settings.SYSTEM_CONFIG = _get_all_system_config()
+        settings.SYSTEM_CONFIG = _get_all_system_config()
     except Exception as e:
         print("请先进行数据库迁移!")
     return
@@ -107,14 +84,8 @@ def refresh_dictionary():
     刷新字典配置
     :return:
     """
-    if is_tenants_mode():
-        from django_tenants.utils import tenant_context, get_tenant_model
 
-        for tenant in get_tenant_model().objects.filter():
-            with tenant_context(tenant):
-                settings.DICTIONARY_CONFIG[connection.tenant.schema_name] = _get_all_dictionary()
-    else:
-        settings.DICTIONARY_CONFIG = _get_all_dictionary()
+    settings.DICTIONARY_CONFIG = _get_all_dictionary()
 
 
 def refresh_system_config():
@@ -122,14 +93,8 @@ def refresh_system_config():
     刷新系统配置
     :return:
     """
-    if is_tenants_mode():
-        from django_tenants.utils import tenant_context, get_tenant_model
 
-        for tenant in get_tenant_model().objects.filter():
-            with tenant_context(tenant):
-                settings.SYSTEM_CONFIG[connection.tenant.schema_name] = _get_all_system_config()
-    else:
-        settings.SYSTEM_CONFIG = _get_all_system_config()
+    settings.SYSTEM_CONFIG = _get_all_system_config()
 
 
 # ================================================= #
@@ -143,10 +108,7 @@ def get_dictionary_config(schema_name=None):
     """
     if not settings.DICTIONARY_CONFIG:
         refresh_dictionary()
-    if is_tenants_mode():
-        dictionary_config = settings.DICTIONARY_CONFIG[schema_name or connection.tenant.schema_name]
-    else:
-        dictionary_config = settings.DICTIONARY_CONFIG
+    dictionary_config = settings.DICTIONARY_CONFIG
     return dictionary_config or {}
 
 
@@ -189,10 +151,7 @@ def get_system_config(schema_name=None):
     """
     if not settings.SYSTEM_CONFIG:
         refresh_system_config()
-    if is_tenants_mode():
-        dictionary_config = settings.SYSTEM_CONFIG[schema_name or connection.tenant.schema_name]
-    else:
-        dictionary_config = settings.SYSTEM_CONFIG
+    dictionary_config = settings.SYSTEM_CONFIG
     return dictionary_config or {}
 
 

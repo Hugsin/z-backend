@@ -91,14 +91,17 @@ def we_chat_mp_request(request):
             data = we_chat_mp_access_token_task()
             access_token = cache.get('access_token')
         if access_token:
-            headers = (request.headers)
+            headers = request.headers
             data = json.loads(request.body) if request.body else {}
             data = json.dumps(data)
+            print(data)
+
             method = request.method
             params = deepcopy(request.GET)
             params['access_token'] = cache.get('access_token')
             path = str(request.path).rsplit('wechatmp', 1)[-1]
             url = f'{WECHAT_MP_URL}{path}'
+            print(url)
             return do_request(
                 method=method,
                 url=url,
@@ -108,6 +111,7 @@ def we_chat_mp_request(request):
         else:
             return data
     except Exception as e:
+        print(e)
         # 处理异常情况
         return ErrorResponse(msg=e)
 
