@@ -97,11 +97,11 @@ class GitRepository(object):
         self.repo.git.checkout(tag)
 
 
-if __name__ == '__main__':
-    local_path = os.path.join('codes', 't1')
-    remote_path = 'https://github.com/AliMales/z-backend.git'
-    repo = GitRepository(local_path, remote_path)
-    branch_list = repo.branches()
-    print(branch_list)
-    # repo.change_to_branch('dev')
-    repo.pull()
+# if __name__ == '__main__':
+#     local_path = os.path.join('codes', 't1')
+#     remote_path = 'https://github.com/AliMales/z-backend.git'
+#     repo = GitRepository(local_path, remote_path)
+#     branch_list = repo.branches()
+#     print(branch_list)
+#     # repo.change_to_branch('dev')
+#     repo.pull()
