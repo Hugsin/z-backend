@@ -12,7 +12,7 @@ Accept: application/json, text/plain, */*
 
 {
     "description": "测试商品",
-    "out_trade_no": "26a4435196871ff30d20230216124234",
+    "out_trade_no": "26a4435196871ff30d20230216124235",
     "notify_url": "https://www.tigerzh.com/api/open/notify",
     "goods_tag": "asdfasf",
     "support_fapiao": false,
@@ -30,9 +30,9 @@ Content-Type: application/json
 Accept: application/json, text/plain, */*
 
 {
-    "description": "测试商品",
-    "out_trade_no": "26a4435196871ff30d20230216124233",
-    "notify_url": "https://www.tigerzh.com/api/open/notify",
+    "description": "消息测试商品4",
+    "out_trade_no": "26a4435196871ff30d20230216124240",
+    "notify_url": "http://7a79cdf3.r2.cpolar.top/open/payMessage",
     "goods_tag": "asdfasf",
     "support_fapiao": false,
     "amount": {

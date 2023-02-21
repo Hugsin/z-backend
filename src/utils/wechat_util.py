@@ -25,11 +25,16 @@ from cryptography.hazmat.primitives.hmac import HMAC
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from cryptography.x509 import load_pem_x509_certificate
 global _PRIVATE_KEY
+global _PUBLIC_KEY
 logger = getLogger(__name__)
 
 with open(str(BASE_DIR)+'/cert/apiclient_key.pem') as f:
     _PRIVATE_KEY = f.read()
     f.close()
+with open(str(BASE_DIR)+'/cert/apiclient_cert.pem') as f:
+    _PUBLIC_KEY = f.read()
+    f.close()
+
 
 # 微信公众号相关
 
@@ -49,14 +54,13 @@ def verify_mp_config(request):
     timestamp = request.query_params.get('timestamp')
     nonce = request.query_params.get('nonce')
     echostr = request.query_params.get('echostr')
-    if echostr != None:
-        auth_list = [WECHAT_PAY_V3KEY, timestamp, nonce]
-        auth_list.sort()
-        signature_str = (''.join(auth_list))
-        sha = hashlib.sha1(signature_str.encode('utf-8'))
-        encrypts = sha.hexdigest()
-        if encrypts == signature:
-            return echostr
+    auth_list = [WECHAT_PAY_V3KEY, timestamp, nonce]
+    auth_list.sort()
+    signature_str = (''.join(auth_list))
+    sha = hashlib.sha1(signature_str.encode('utf-8'))
+    encrypts = sha.hexdigest()
+    if encrypts == signature:
+        return True, echostr
     else:
         return False
 
@@ -92,7 +96,7 @@ def we_chat_mp_request(request):
             access_token = cache.get('access_token')
         if access_token:
             headers = request.headers
-            data = json.loads(request.body) if request.body else {}
+            data = request.data 
             data = json.dumps(data)
             method = request.method
             params = deepcopy(request.GET)
@@ -125,6 +129,8 @@ def get_order_string(include_timestamp=True):
 def we_chat_pay_verify_notify(request):
     """校验微信通知"""
     headers = request.headers
+    print('headers',request.headers)
+    print('data',request.data)
     body = request.data
     signature = headers.get('Wechatpay-Signature')
     timestamp = headers.get('Wechatpay-Timestamp')
@@ -287,7 +293,7 @@ def load_private_key(private_key_str):
 
 
 def rsa_verify(timestamp, nonce, body, signature):
-    certificate = load_certificate(_PRIVATE_KEY)
+    certificate = load_certificate(_PUBLIC_KEY)
     sign_str = '%s\n%s\n%s\n' % (timestamp, nonce, body)
     public_key = certificate.public_key()
     message = sign_str.encode('UTF-8')
@@ -300,6 +306,7 @@ def rsa_verify(timestamp, nonce, body, signature):
 
 
 def rsa_encrypt(text, certificate):
+    certificate = load_certificate(_PUBLIC_KEY)
     data = text.encode('UTF-8')
     public_key = certificate.public_key()
     cipherbyte = public_key.encrypt(

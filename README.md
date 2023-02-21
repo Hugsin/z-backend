@@ -31,4 +31,7 @@ cache.has_key('key') #是否存在key => True
 Celery -A application beat -l info
 # 去重生成requirements.txt文件
 pip3 freeze | sort | uniq > requirements.txt
+
+https://dashboard.cpolar.com/
+./cpolar authtoken NWMyZjVmZmMtZTM0MC00ODFmLWJhMWQtOWI4NTlkYzI2NDhj
 ```

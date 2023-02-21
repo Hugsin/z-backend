@@ -2,7 +2,6 @@ import base64
 import hashlib
 import json
 from datetime import datetime, timedelta
-
 from captcha.views import CaptchaStore, captcha_image
 from django.contrib import auth
 from django.contrib.auth import login
@@ -38,7 +37,7 @@ class QrLoginView(APIView):
             self.GET = {}
             self.accepted_renderer = {}
             self.path = '/wechatmp/cgi-bin/qrcode/create'
-            self.body = '{"expire_seconds":2592000,"action_name":"QR_SCENE","action_info":{"scene":{"scene_id":"%s"}}}' % (
+            self.body = '{"expire_seconds":2592000,"action_name":"QR_SCENE","action_info":{"scene":{"scene_str":"%s"}}}' % (
                 hashkey)
 
     def get(self, request):
