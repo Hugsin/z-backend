@@ -31,6 +31,37 @@ class WechatMessageViewSet(ModelViewSet):
     permission_classes = []
     serializer_class = WeChatPaySerializer
 
+    def valid_hashkey(self, hashkey):
+        return CaptchaStore.objects.filter(hashkey=hashkey).first()
+
+    def repley_event_message(self, msg):
+        event_type = msg['xml']['Event']
+        if (event_type == 'SCAN'):
+            openid = msg['xml']['FromUserName']
+            hashkey = msg['xml']['EventKey']
+            result = '登录成功！'
+            valid_hashkey_row = self.valid_hashkey(hashkey=hashkey)
+            if valid_hashkey_row:
+                valid_hashkey_row.delete()
+                instance = Users.objects.filter(username=openid).first()
+                if instance:
+                    # 登录
+                    print(instance)
+                    result = '登录成功！'
+                else:
+                    # 注册
+                    user_serializer = UserCreateSerializer(data={
+                        'username': openid,
+                        'openid': openid,
+                        'name': '普通会员'
+                    })
+                    if (user_serializer.is_valid()):
+                        user_serializer.save()
+                        result = '恭喜，注册成功！'
+            else:
+                result = '二维码已过期！'
+        return result
+
     def msg_adapter(self, msg):
         msg = parse(msg)
         msg_type = msg['xml']['MsgType']
@@ -44,26 +75,7 @@ class WechatMessageViewSet(ModelViewSet):
         })
         if (msg_type == 'event'):
             # 事件消息
-            event_type = msg['xml']['Event']
-            if (event_type == 'SCAN'):
-                openid = msg['xml']['FromUserName']
-                instance = Users.objects.filter(username=openid).first()
-                if (instance):
-                    # 登录
-                    print(instance)
-                    result['xml']['Content'] = '登录成功！'
-                else:
-                    # 注册
-                    user_serializer = UserCreateSerializer(data={
-                        'username': openid,
-                        'openid': openid,
-                        'name': '普通会员'
-                    })
-                    if (user_serializer.is_valid()):
-                        user_serializer.save()
-                        result['xml']['Content'] = '恭喜，注册成功！'
-                # CaptchaStore.objects.filter(hashkey='').first().delete()
-                # Users.objects.filter()
+            result['xml']['Content'] = self.repley_event_message(msg=msg)
         else:
             # 普通消息
             result['xml']['Content'] = '嫩哇犀利哦，提昂北洞哟'
@@ -84,7 +96,7 @@ class WechatMessageViewSet(ModelViewSet):
             return ErrorResponse(msg='验证不通过')
 
     def pay_message(self, request):
-        """微信支付消息"""       
+        """微信支付消息"""
         result = we_chat_pay_verify_notify(request)
         print(result)
         if result and result.get('event_type') == 'TRANSACTION.SUCCESS':

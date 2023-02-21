@@ -97,6 +97,7 @@ def we_chat_mp_request(request):
         if access_token:
             headers = request.headers
             data = request.data 
+            print(data)
             data = json.dumps(data)
             method = request.method
             params = deepcopy(request.GET)
@@ -296,6 +297,8 @@ def rsa_verify(timestamp, nonce, body, signature):
     certificate = load_certificate(_PUBLIC_KEY)
     sign_str = '%s\n%s\n%s\n' % (timestamp, nonce, body)
     public_key = certificate.public_key()
+    print(public_key)
+    print(public_key)
     message = sign_str.encode('UTF-8')
     signature = b64decode(signature)
     try:

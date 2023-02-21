@@ -37,15 +37,14 @@ class QrLoginView(APIView):
             self.GET = {}
             self.accepted_renderer = {}
             self.path = '/wechatmp/cgi-bin/qrcode/create'
-            self.body = '{"expire_seconds":2592000,"action_name":"QR_SCENE","action_info":{"scene":{"scene_str":"%s"}}}' % (
-                hashkey)
+            self.data = {"expire_seconds": 604800, "action_name": "QR_STR_SCENE",
+                         "action_info": {"scene": {"scene_str": hashkey}}}
 
     def get(self, request):
         hashkey = CaptchaStore.generate_key()
         row = CaptchaStore.objects.filter(hashkey=hashkey).first()
         id = row.id
         _request = self.FakeRequest(hashkey)
-        print(_request.body)
         response = we_chat_mp_request(_request)
         print('response', response)
         response = json.loads(response)
