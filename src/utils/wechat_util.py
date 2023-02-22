@@ -25,7 +25,7 @@ from cryptography.hazmat.primitives.hmac import HMAC
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from cryptography.x509 import load_pem_x509_certificate
 global _PRIVATE_KEY
-global _PUBLIC_KEY
+global _CERTIFICATES
 logger = getLogger(__name__)
 
 with open(str(BASE_DIR)+'/cert/apiclient_key.pem') as f:
@@ -174,7 +174,6 @@ def we_chat_pay_request(request):
     处理公告参数
     转发数据地址
     """
-    PRIVATE_KEY = load_private_key(_PRIVATE_KEY)
     try:
         # 获取请求参数
         params = request.GET
@@ -293,7 +292,7 @@ def load_private_key(private_key_str):
 
 
 def rsa_verify(timestamp, nonce, body, signature):
-    certificate = load_certificate(_PRIVATE_KEY)
+    certificate = load_certificate(_PUBLIC_KEY)
     sign_str = '%s\n%s\n%s\n' % (timestamp, nonce, body)
     public_key = certificate.public_key()
     print(public_key)
@@ -308,7 +307,7 @@ def rsa_verify(timestamp, nonce, body, signature):
 
 
 def rsa_encrypt(text, certificate):
-    certificate = load_certificate(_PRIVATE_KEY)
+    certificate = load_certificate(_PUBLIC_KEY)
     data = text.encode('UTF-8')
     public_key = certificate.public_key()
     cipherbyte = public_key.encrypt(

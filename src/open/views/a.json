@@ -1,23 +1,24 @@
 [
-    {
-        "xml": {
-            "ToUserName": "gh_a9e97249028e",
-            "FromUserName": "ouGWL5htUfPCgH02DDC-q4XaLOb0",
-            "CreateTime": "1676962669",
-            "MsgType": "event",
-            "Event": "SCAN",
-            "EventKey": "9",
-            "Ticket": "gQGw7zwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAySGpvOW84VUJlYkMxZHlVck5BMWoAAgRia-RjAwQAjScA"
-        }
-    },
-    {
-        "xml": {
-            "ToUserName": "gh_a9e97249028e",
-            "FromUserName": "ouGWL5htUfPCgH02DDC-q4XaLOb0",
-            "CreateTime": "1676962635",
-            "MsgType": "text",
-            "Content": "1",
-            "MsgId": "24008330618332395"
-        }
+  {
+    "xml": {
+      "ToUserName": "gh_a9e97249028e",
+      "FromUserName": "ouGWL5htUfPCgH02DDC-q4XaLOb0",
+      "CreateTime": "1676962669",
+      "MsgType": "event",
+      "Event": "SCAN",
+      "EventKey": "9",
+      "Ticket": "gQGw7zwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAySGpvOW84VUJlYkMxZHlVck5BMWoAAgRia-RjAwQAjScA"
     }
+  },
+  {
+    "xml": {
+      "ToUserName": "gh_a9e97249028e",
+      "FromUserName": "ouGWL5htUfPCgH02DDC-q4XaLOb0",
+      "CreateTime": "1676962635",
+      "MsgType": "text",
+      "Content": "1",
+      "MsgId": "24008330618332395",
+      "publicKey": 516120581651297643360037854337619459612108631359
+    }
+  }
 ]

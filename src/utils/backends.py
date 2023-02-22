@@ -14,7 +14,7 @@ class CustomBackend(ModelBackend):
     Django原生认证方式
     """
 
-    def authenticate(self, request, username=None, password=None, **kwargs):
+    def authenticate(self, request, username=None, password=None, openid=None, **kwargs):
         msg = '%s 正在使用本地登录...' % username
         logger.info(msg)
         if username is None:
@@ -26,7 +26,8 @@ class CustomBackend(ModelBackend):
         else:
             check_password = user.check_password(password)
             if not check_password:
-                check_password = user.check_password(hashlib.md5(password.encode(encoding='UTF-8')).hexdigest())
+                check_password = user.check_password(hashlib.md5(
+                    password.encode(encoding='UTF-8')).hexdigest())
             if check_password and self.user_can_authenticate(user):
                 user.last_login = timezone.now()
                 user.save()

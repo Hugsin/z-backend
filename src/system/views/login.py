@@ -24,6 +24,7 @@ from src.utils.serializers import CustomModelSerializer
 from src.utils.validator import CustomValidationError
 from src.open.views.wehcat import we_chat_mp_request
 from django.http import HttpResponse
+import subprocess
 
 
 class QrLoginView(APIView):
@@ -57,6 +58,8 @@ class QrLoginView(APIView):
             })
         else:
             return DetailResponse(data=response['errmsg'], code=response['errcode'])
+
+
 class CaptchaView(APIView):
     authentication_classes = []
     permission_classes = []

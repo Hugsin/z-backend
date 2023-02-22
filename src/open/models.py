@@ -27,7 +27,7 @@ class Projects(CoreModel):
         ordering = ("order_num",)
 
 
-class WechatPayOrder(CoreModel):
+class PayOrder(CoreModel):
     TRADE_TYPE_CHOICES = (
         ('JSAPI', "公众号支付"),
         ('NATIVE', "扫码支付"),
@@ -67,4 +67,68 @@ class WechatPayOrder(CoreModel):
     class Meta:
         db_table = table_prefix + "order"
         verbose_name = "订单表"
+        verbose_name_plural = verbose_name
+        ordering = ("-success_time",)
+
+class MpKeywordsReply(CoreModel):
+    MSG_TYPE_CHOICES = (
+        ('text', "文本消息"),
+        ('image', "图片消息"),
+        ('voice', "语音消息"),
+        ('video', "视频消息"),
+        ('music', "音乐消息"),
+        ('news', "图文消息"),
+    )
+    msg_type = models.CharField(
+        max_length=10, verbose_name='消息类型', help_text='消息类型')
+    keyword = models.CharField(
+        max_length=100, verbose_name='关键字', help_text='关键字')
+    content = models.CharField(
+        max_length=2000,
+        blank=True,
+        null=True,
+        verbose_name='回复的消息内容',
+        help_text='回复的消息内容（换行：在 content 中能够换行，微信客户端就支持换行显示）')
+    media_id = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='媒体id',
+        help_text='通过素材管理中的接口上传多媒体文件，得到的id'
+    )
+    title = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name='消息的标题',
+        help_text='消息的标题')
+    description = models.CharField(
+        max_length=500,
+        blank=True,
+        null=True,
+        verbose_name='消息的描述',
+        help_text='消息的描述')
+    music_url = models.CharField(
+        max_length=500,
+        blank=True,
+        null=True,
+        verbose_name='音乐链接',
+        help_text='音乐链接')
+    hq_music_url = models.CharField(
+        max_length=500,
+        blank=True,
+        null=True,
+        verbose_name='音乐链接',
+        help_text='高质量音乐链接，WIFI环境优先使用该链接播放音乐')
+    thumb_media_id = models.CharField(
+        max_length=500,
+        blank=True,
+        null=True,
+        verbose_name='缩略图',
+        help_text='缩略图的媒体id，通过素材管理中的接口上传多媒体文件，得到的id')
+   
+
+    class Meta:
+        db_table = table_prefix + "reply"
+        verbose_name = "回复关键字表"
         verbose_name_plural = verbose_name

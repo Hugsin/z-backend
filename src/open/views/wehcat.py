@@ -8,12 +8,15 @@ from src.utils.json_response import DetailResponse, SuccessResponse, ErrorRespon
 from rest_framework.response import Response
 from django.http import HttpResponse
 from src.utils.serializers import CustomModelSerializer
-from src.open.models import WechatPayOrder
+from src.open.models import PayOrder
 from src.system.views.user import Users, UserCreateSerializer
 from captcha.views import CaptchaStore
 from src.utils.wechat_util import we_chat_pay_request, we_chat_pay_verify_notify, we_chat_mp_request, verify_mp_config
 from src.utils.request_util import save_login_log
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, get_user_model
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.utils import timezone
+UserModel = get_user_model()
 
 
 class WeChatPaySerializer(CustomModelSerializer):
@@ -21,7 +24,7 @@ class WeChatPaySerializer(CustomModelSerializer):
     -序列化器
     """
     class Meta:
-        model = WechatPayOrder
+        model = PayOrder
         fields = "__all__"
 
 
@@ -43,8 +46,8 @@ class WechatMessageViewSet(ModelViewSet):
             result = '登录成功！'
             valid_hashkey_row = self.valid_hashkey(hashkey=hashkey)
             if valid_hashkey_row:
-                # valid_hashkey_row.delete()
-                instance = Users.objects.filter(username=openid).first()
+                valid_hashkey_row.delete()
+                instance = UserModel.objects.filter(openid=openid).first()
                 if instance is None:
                     # 注册
                     user_serializer = UserCreateSerializer(data={
@@ -56,14 +59,14 @@ class WechatMessageViewSet(ModelViewSet):
                         instance = user_serializer.save()
                         # 定义用户名规则
                         instance.username = instance.id
-                        instance.save()
+                        result='注册成功'
                 # 登录
-                user_obj = authenticate(
-                    request=request, username=instance.username, password=instance.password)
-                login(request, user_obj)
+                instance.last_login = timezone.now()
+                instance.save()
+                refresh = RefreshToken.for_user(instance)
+                login(request, instance)
                 save_login_log(request)
-                result = '登录成功！'
-
+                result = f'{result}！refresh:{str(refresh)} access:{str(refresh.access_token)}'
             else:
                 result = '二维码已过期！'
         return result
