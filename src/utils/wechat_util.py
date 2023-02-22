@@ -96,7 +96,7 @@ def we_chat_mp_request(request):
             access_token = cache.get('access_token')
         if access_token:
             headers = request.headers
-            data = request.data 
+            data = request.data
             data = json.dumps(data)
             method = request.method
             params = deepcopy(request.GET)
@@ -129,8 +129,8 @@ def get_order_string(include_timestamp=True):
 def we_chat_pay_verify_notify(request):
     """校验微信通知"""
     headers = request.headers
-    print('headers',request.headers)
-    print('data',request.data)
+    print('headers', request.headers)
+    print('data', request.data)
     body = request.data
     signature = headers.get('Wechatpay-Signature')
     timestamp = headers.get('Wechatpay-Timestamp')
@@ -182,7 +182,7 @@ def we_chat_pay_request(request):
         method = request.method
         if (method == 'POST'):
             # 获取完整的请求报文
-            data = json.loads((request.body)) if request.body else {}
+            data = request.data
             data['mchid'] = WECHAT_PAY_MCHID
             data['appid'] = WECHAT_MP_APPID
             data = json.dumps(data)
@@ -293,7 +293,7 @@ def load_private_key(private_key_str):
 
 
 def rsa_verify(timestamp, nonce, body, signature):
-    certificate = load_certificate(_PUBLIC_KEY)
+    certificate = load_certificate(_PRIVATE_KEY)
     sign_str = '%s\n%s\n%s\n' % (timestamp, nonce, body)
     public_key = certificate.public_key()
     print(public_key)
@@ -308,7 +308,7 @@ def rsa_verify(timestamp, nonce, body, signature):
 
 
 def rsa_encrypt(text, certificate):
-    certificate = load_certificate(_PUBLIC_KEY)
+    certificate = load_certificate(_PRIVATE_KEY)
     data = text.encode('UTF-8')
     public_key = certificate.public_key()
     cipherbyte = public_key.encrypt(
