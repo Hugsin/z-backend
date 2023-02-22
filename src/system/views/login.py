@@ -22,7 +22,7 @@ from src.utils.json_response import ErrorResponse, DetailResponse
 from src.utils.request_util import save_login_log
 from src.utils.serializers import CustomModelSerializer
 from src.utils.validator import CustomValidationError
-from src.open.views.wehcat import we_chat_mp_request
+from src.open.views.wehcat import wechat_instance
 from django.http import HttpResponse
 import subprocess
 
@@ -46,7 +46,7 @@ class QrLoginView(APIView):
         row = CaptchaStore.objects.filter(hashkey=hashkey).first()
         id = row.id
         _request = self.FakeRequest(hashkey)
-        response = we_chat_mp_request(_request)
+        response = wechat_instance.mp_request(_request)
         print('response', response)
         if (not isinstance(response, dict)):
             response = json.loads(response)

@@ -34,8 +34,8 @@ Accept: application/json, text/plain, */*
 
 {
     "description": "消息测试商品8",
-    "out_trade_no": "26a4435196871ff30d20230216124249",
-    "notify_url": "https://1a6b57e5.r5.cpolar.top/",
+    "out_trade_no": "26a4435196871ff30d20230216124254",
+    "notify_url": "https://37285a7a.r5.cpolar.top/open/paymessage",
     "goods_tag": "asdfasf",
     "support_fapiao": false,
     "amount": {

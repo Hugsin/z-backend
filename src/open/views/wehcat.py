@@ -11,7 +11,7 @@ from src.utils.serializers import CustomModelSerializer
 from src.open.models import PayOrder
 from src.system.views.user import Users, UserCreateSerializer
 from captcha.views import CaptchaStore
-from src.utils.wechat_util import we_chat_pay_request, we_chat_pay_verify_notify, we_chat_mp_request, verify_mp_config
+from src.utils.wechat_util import wechat_instance
 from src.utils.request_util import save_login_log
 from django.contrib.auth import authenticate, login, get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -93,7 +93,7 @@ class WechatMessageViewSet(ModelViewSet):
 
     def mp_message(self, request):
         """微信公众号消息"""
-        is_verify, echostr = verify_mp_config(request)
+        is_verify, echostr = wechat_instance.verify_mp_config(request)
         if is_verify:
             if echostr:
                 # 认证处理
@@ -107,7 +107,7 @@ class WechatMessageViewSet(ModelViewSet):
 
     def pay_message(self, request):
         """微信支付消息"""
-        result = we_chat_pay_verify_notify(request)
+        result = wechat_instance.pay_verify_notify(request)
         print(result)
         if result and result.get('event_type') == 'TRANSACTION.SUCCESS':
             resp = result.get('resource')
@@ -137,14 +137,14 @@ class WechatViewSet(ModelViewSet):
 
     def mp_request(self, request, path):
         """微信公众号"""
-        data = we_chat_mp_request(request)
+        data = wechat_instance.mp_request(request)
         if isinstance(data, str):
             data = json.loads(data)
         return DetailResponse(data=data)
 
     def pay_requeset(self, request, path):
         """微信支付API"""
-        data = we_chat_pay_request(request)
+        data = wechat_instance.pay_request(request)
         if isinstance(data, str):
             return DetailResponse(data=json.loads(data))
         else:

@@ -22,11 +22,11 @@ urlpatterns = [
         'patch': 'mp_request',
         'delete': 'mp_request',
     })),
-    path(r'payMessage', WechatMessageViewSet.as_view({
+    path(r'paymessage', WechatMessageViewSet.as_view({
         'get': 'pay_message',
         'post': 'pay_message',
     })),
-     path(r'mpMessage', WechatMessageViewSet.as_view({
+     path(r'mpmessage', WechatMessageViewSet.as_view({
         'get': 'mp_message',
         'post': 'mp_message',
     })),
