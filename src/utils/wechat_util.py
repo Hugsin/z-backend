@@ -97,7 +97,6 @@ def we_chat_mp_request(request):
         if access_token:
             headers = request.headers
             data = request.data 
-            print(data)
             data = json.dumps(data)
             method = request.method
             params = deepcopy(request.GET)

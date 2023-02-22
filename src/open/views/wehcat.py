@@ -14,6 +14,7 @@ from captcha.views import CaptchaStore
 from src.utils.wechat_util import we_chat_pay_request, we_chat_pay_verify_notify, we_chat_mp_request, verify_mp_config
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from src.utils.request_util import save_login_log
 
 
 class WeChatPaySerializer(CustomModelSerializer):
@@ -34,7 +35,7 @@ class WechatMessageViewSet(ModelViewSet):
     def valid_hashkey(self, hashkey):
         return CaptchaStore.objects.filter(hashkey=hashkey).first()
 
-    def repley_event_message(self, msg):
+    def repley_event_message(self,request, msg):
         event_type = msg['xml']['Event']
         if (event_type == 'SCAN'):
             openid = msg['xml']['FromUserName']
@@ -47,6 +48,7 @@ class WechatMessageViewSet(ModelViewSet):
                 if instance:
                     # 登录
                     print(instance)
+                    save_login_log(request)
                     result = '登录成功！'
                 else:
                     # 注册
@@ -62,8 +64,8 @@ class WechatMessageViewSet(ModelViewSet):
                 result = '二维码已过期！'
         return result
 
-    def msg_adapter(self, msg):
-        msg = parse(msg)
+    def msg_adapter(self, request):
+        msg = parse(request.body)
         msg_type = msg['xml']['MsgType']
         result = ({
             "xml": {
@@ -75,7 +77,7 @@ class WechatMessageViewSet(ModelViewSet):
         })
         if (msg_type == 'event'):
             # 事件消息
-            result['xml']['Content'] = self.repley_event_message(msg=msg)
+            result['xml']['Content'] = self.repley_event_message(request,msg=msg)
         else:
             # 普通消息
             result['xml']['Content'] = '嫩哇犀利哦，提昂北洞哟'
@@ -90,7 +92,7 @@ class WechatMessageViewSet(ModelViewSet):
                 return HttpResponse(echostr)
             else:
                 # 消息处理
-                return HttpResponse(self.msg_adapter(request.body))
+                return HttpResponse(self.msg_adapter(request))
 
         else:
             return ErrorResponse(msg='验证不通过')

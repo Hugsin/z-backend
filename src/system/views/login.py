@@ -47,15 +47,16 @@ class QrLoginView(APIView):
         _request = self.FakeRequest(hashkey)
         response = we_chat_mp_request(_request)
         print('response', response)
-        response = json.loads(response)
-        ticket = response['ticket']
-        # print(ticket)
-        return DetailResponse(data={
-            'url': f'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket={ticket}',
-            'scence_id': id
-        })
-
-
+        if (not isinstance(response, dict)):
+            response = json.loads(response)
+            ticket = response['ticket']
+            # print(ticket)
+            return DetailResponse(data={
+                'url': f'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket={ticket}',
+                'scence_id': id
+            })
+        else:
+            return DetailResponse(data=response['errmsg'], code=response['errcode'])
 class CaptchaView(APIView):
     authentication_classes = []
     permission_classes = []
