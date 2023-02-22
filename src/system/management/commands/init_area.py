@@ -5,6 +5,8 @@
 2. 修改此文件中对应json名
 3. 右击执行此py文件进行初始化
 """
+from src.system.models import Area
+from application.settings import BASE_DIR
 import json
 import os
 
@@ -17,8 +19,6 @@ from application import dispatch
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'application.settings')
 django.setup()
-from application.settings import BASE_DIR
-from src.system.models import Area
 
 area_code_list = []
 
@@ -31,7 +31,8 @@ def area_list(code_list, pcode=None, depth=1):
         code = code_dict.get('code', None)
         name = code_dict.get('name', None)
         children = code_dict.get('children', None)
-        pinyin = ''.join([''.join(i) for i in pypinyin.pinyin(name, style=pypinyin.NORMAL)])
+        pinyin = ''.join([''.join(i)
+                         for i in pypinyin.pinyin(name, style=pypinyin.NORMAL)])
         area_code_list.append(
             {
                 "name": name,
@@ -67,17 +68,6 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-
         print(f"正在准备初始化省份数据...")
-
-        if dispatch.is_tenants_mode():
-            from django_tenants.utils import get_tenant_model
-            from django_tenants.utils import tenant_context
-            for tenant in get_tenant_model().objects.exclude(schema_name='public'):
-                with tenant_context(tenant):
-                    print(f"租户[{connection.tenant.schema_name}]初始化数据开始...")
-                    main()
-                    print(f"租户[{connection.tenant.schema_name}]初始化数据完成！")
-        else:
-            main()
+        main()
         print("省份数据初始化数据完成！")

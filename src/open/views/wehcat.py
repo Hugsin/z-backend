@@ -12,9 +12,8 @@ from src.open.models import WechatPayOrder
 from src.system.views.user import Users, UserCreateSerializer
 from captcha.views import CaptchaStore
 from src.utils.wechat_util import we_chat_pay_request, we_chat_pay_verify_notify, we_chat_mp_request, verify_mp_config
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.views import TokenObtainPairView
 from src.utils.request_util import save_login_log
+from django.contrib.auth import authenticate, login
 
 
 class WeChatPaySerializer(CustomModelSerializer):
@@ -35,31 +34,36 @@ class WechatMessageViewSet(ModelViewSet):
     def valid_hashkey(self, hashkey):
         return CaptchaStore.objects.filter(hashkey=hashkey).first()
 
-    def repley_event_message(self,request, msg):
+    def repley_event_message(self, request, msg):
         event_type = msg['xml']['Event']
+        result = f'{event_type}了 收到啦，收到啦！'
         if (event_type == 'SCAN'):
             openid = msg['xml']['FromUserName']
             hashkey = msg['xml']['EventKey']
             result = '登录成功！'
             valid_hashkey_row = self.valid_hashkey(hashkey=hashkey)
             if valid_hashkey_row:
-                valid_hashkey_row.delete()
+                # valid_hashkey_row.delete()
                 instance = Users.objects.filter(username=openid).first()
-                if instance:
-                    # 登录
-                    print(instance)
-                    save_login_log(request)
-                    result = '登录成功！'
-                else:
+                if instance is None:
                     # 注册
                     user_serializer = UserCreateSerializer(data={
                         'username': openid,
                         'openid': openid,
-                        'name': '普通会员'
+                        'name': '普通会员',
                     })
                     if (user_serializer.is_valid()):
-                        user_serializer.save()
-                        result = '恭喜，注册成功！'
+                        instance = user_serializer.save()
+                        # 定义用户名规则
+                        instance.username = instance.id
+                        instance.save()
+                # 登录
+                user_obj = authenticate(
+                    request=request, username=instance.username, password=instance.password)
+                login(request, user_obj)
+                save_login_log(request)
+                result = '登录成功！'
+
             else:
                 result = '二维码已过期！'
         return result
@@ -77,7 +81,8 @@ class WechatMessageViewSet(ModelViewSet):
         })
         if (msg_type == 'event'):
             # 事件消息
-            result['xml']['Content'] = self.repley_event_message(request,msg=msg)
+            result['xml']['Content'] = self.repley_event_message(
+                request, msg=msg)
         else:
             # 普通消息
             result['xml']['Content'] = '嫩哇犀利哦，提昂北洞哟'
@@ -137,7 +142,7 @@ class WechatViewSet(ModelViewSet):
     def pay_requeset(self, request, path):
         """微信支付API"""
         data = we_chat_pay_request(request)
-        if isinstance(data,str):
-         return DetailResponse(data=json.loads(data))
+        if isinstance(data, str):
+            return DetailResponse(data=json.loads(data))
         else:
-         return DetailResponse(data=data.data)
+            return DetailResponse(data=data.data)
