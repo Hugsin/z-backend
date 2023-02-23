@@ -47,19 +47,15 @@ class WechatMessageViewSet(ModelViewSet):
             valid_hashkey_row = self.valid_hashkey(hashkey=hashkey)
             if valid_hashkey_row:
                 valid_hashkey_row.delete()
-                instance = UserModel.objects.filter(openid=openid).first()
-                if instance is None:
-                    # 注册
-                    user_serializer = UserCreateSerializer(data={
+                instance, created = UserModel.objects.get_or_create(
+                    openid=openid,
+                    defaults={
                         'username': openid,
                         'openid': openid,
                         'name': '普通会员',
                     })
-                    if (user_serializer.is_valid()):
-                        instance = user_serializer.save()
-                        # 定义用户名规则
-                        instance.username = instance.id
-                        result = '注册成功'
+                if created:
+                    result = '注册成功'
                 # 登录
                 instance.last_login = timezone.now()
                 instance.save()
@@ -122,20 +118,22 @@ class WechatMessageViewSet(ModelViewSet):
             success_time = result.get('success_time')
             payer = result.get('payer').get('openid')
             total = result.get('amount').get('total')
-            PayOrder.objects.update_or_create(defaults={
-                'appid': appid,
-                'mchid': mchid,
-                'out_trade_no': out_trade_no,
-                'transaction_id': transaction_id,
-                'trade_type': trade_type,
-                'trade_state': trade_state,
-                'trade_state_desc': trade_state_desc,
-                'bank_type': bank_type,
-                'attach': attach,
-                'success_time': success_time,
-                'payer': payer,
-                'total': total,
-            }, out_trade_no=out_trade_no)
+            PayOrder.objects.update_or_create(
+                out_trade_no=out_trade_no,
+                defaults={
+                    'appid': appid,
+                    'mchid': mchid,
+                    'out_trade_no': out_trade_no,
+                    'transaction_id': transaction_id,
+                    'trade_type': trade_type,
+                    'trade_state': trade_state,
+                    'trade_state_desc': trade_state_desc,
+                    'bank_type': bank_type,
+                    'attach': attach,
+                    'success_time': success_time,
+                    'payer': payer,
+                    'total': total,
+                })
             return Response({'code': 'SUCCESS', 'message': '成功'})
         else:
             return Response({'code': 'FAILED', 'message': '失败'})
