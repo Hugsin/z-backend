@@ -20,5 +20,24 @@
       "MsgId": "24008330618332395",
       "publicKey": 516120581651297643360037854337619459612108631359
     }
+  },
+  {
+    "mchid": "1637520134",
+    "appid": "wxce121790d27bf5ba",
+    "out_trade_no": "26a4435196871ff30d20230216124266",
+    "transaction_id": "4200001756202302231326938767",
+    "trade_type": "NATIVE",
+    "trade_state": "SUCCESS",
+    "trade_state_desc": "支付成功",
+    "bank_type": "OTHERS",
+    "attach": "",
+    "success_time": "2023-02-23T14:44:03+08:00",
+    "payer": { "openid": "ouGWL5htUfPCgH02DDC-q4XaLOb0" },
+    "amount": {
+      "total": 1,
+      "payer_total": 1,
+      "currency": "CNY",
+      "payer_currency": "CNY"
+    }
   }
 ]

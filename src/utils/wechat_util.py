@@ -15,7 +15,9 @@ from base64 import b64decode, b64encode
 from logging import getLogger
 from django.core.cache import cache  # 引入缓存模块
 from src.utils.json_response import ErrorResponse
-from application.settings import WECHAT_PAY_URL, WECHAT_PAY_MCHID, WECHAT_MP_APPID, BASE_DIR, WECHAT_PAY_CERT_NO, WECHAT_PAY_V3KEY, WECHAT_MP_URL, WECHAT_MP_SECRET, WECHAT_PAY_CERT_DIR
+from application.settings import WECHAT_PAY_URL, WECHAT_PAY_MCHID,\
+    WECHAT_MP_APPID, BASE_DIR, WECHAT_PAY_CERT_NO,\
+    WECHAT_PAY_V3KEY, WECHAT_MP_URL, WECHAT_MP_SECRET, WECHAT_PAY_CERT_DIR
 from cryptography.exceptions import InvalidSignature, InvalidTag
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric.padding import MGF1, OAEP, PKCS1v15
@@ -34,6 +36,7 @@ class WeChat():
         self.init_private_key()
         self.init_certificates()
 
+    
     def build_authorization(self, path,
                             method,
                             mchid,
@@ -74,8 +77,8 @@ class WeChat():
         data = b64decode(ciphertext)
         aesgcm = AESGCM(key=key_bytes)
         try:
-            result = aesgcm.decrypt(nonce=nonce_bytes, data=data,
-                                    associated_data=associated_data_bytes).decode('UTF-8')
+            result = aesgcm.decrypt(
+                nonce=nonce_bytes, data=data, associated_data=associated_data_bytes).decode('UTF-8')
         except InvalidTag:
             result = None
         return result
@@ -85,7 +88,7 @@ class WeChat():
     # 对应v3版微信支付api文档的[敏感信息加解密](https://pay.weixin.qq.com/wiki/doc/apiv3/wechatpay/wechatpay4_3.shtml)的加密部分。
 
     def rsa_verify(self, timestamp, nonce, body, signature, certificate):
-        sign_str = '%s\n%s\n%s\n' % (timestamp, nonce, body)
+        sign_str =f'{timestamp}\n{nonce}\n{body}\n'  
         public_key = certificate.public_key()
         message = sign_str.encode('UTF-8')
         signature = b64decode(signature)
@@ -203,57 +206,59 @@ class WeChat():
             # 处理异常情况
             return 'Fail Request %s' % (e)
 
-    def pay_verify_notify(self, request):
-        """校验微信通知"""
-        headers = request.headers
-        print('headers', request.headers)
-        print('data', request.data)
-        body = request.data
-        signature = headers.get('Wechatpay-Signature')
-        timestamp = headers.get('Wechatpay-Timestamp')
-        nonce = headers.get('Wechatpay-Nonce')
-        serial_no = headers.get('Wechatpay-Serial')
-        cert_found = False
+    def find_certificate(self, serial_no):
         for cert in self._certificates:
             if int('0x' + serial_no, 16) == cert.serial_number:
                 cert_found = True
                 certificate = cert
                 break
-        if not cert_found:
+        return certificate
+
+    def pay_verify_notify(self, request):
+        """校验微信通知"""
+        headers = request.headers
+        body = request.data
+        if isinstance(body, bytes):
+            body = body.decode('UTF-8')
+        self.logger.info(f'pay message header: {headers}')
+        self.logger.info(f'pay message body: {body}')
+        signature = headers.get('Wechatpay-Signature')
+        timestamp = headers.get('Wechatpay-Timestamp')
+        nonce = headers.get('Wechatpay-Nonce')
+        serial_no = headers.get('Wechatpay-Serial')
+        certificate = self.find_certificate(serial_no)
+        if not certificate:
             self._update_certificates()
-            for cert in self._certificates:
-                if int('0x' + serial_no, 16) == cert.serial_number:
-                    cert_found = True
-                    certificate = cert
-                    break
-            if not cert_found:
-                return False
+            certificate = self.find_certificate(serial_no)
         is_verify = self.rsa_verify(
             timestamp, nonce, body, signature, certificate)
-        if is_verify:
-            data = json.loads(body)
-            resource_type = data.get('resource_type')
-            if resource_type != 'encrypt-resource':
-                return None
-            resource = data.get('resource')
-            if not resource:
-                return None
-            algorithm = resource.get('algorithm')
-            if algorithm != 'AEAD_AES_256_GCM':
-                raise Exception('does not support this algorithm')
-            nonce = resource.get('nonce')
-            ciphertext = resource.get('ciphertext')
-            associated_data = resource.get('associated_data')
-            if not (nonce and ciphertext):
-                return None
-            if not associated_data:
-                associated_data = ''
-            result = self.aes_decrypt(
-                nonce=nonce,
-                ciphertext=ciphertext,
-                associated_data=associated_data,
-            )
-            return result
+        if not is_verify:
+            self.logger.info('签名验证失败了哦')
+        else:
+            self.logger.info('签名验证通过!!!!!')
+        data = body
+        resource_type = data.get('resource_type')
+        if resource_type != 'encrypt-resource':
+            return None
+        resource = data.get('resource')
+        if not resource:
+            return None
+        algorithm = resource.get('algorithm')
+        if algorithm != 'AEAD_AES_256_GCM':
+            raise Exception('does not support this algorithm')
+        nonce = resource.get('nonce')
+        ciphertext = resource.get('ciphertext')
+        associated_data = resource.get('associated_data')
+        if not (nonce and ciphertext):
+            return None
+        if not associated_data:
+            associated_data = ''
+        result = self.aes_decrypt(
+            nonce=nonce,
+            ciphertext=ciphertext,
+            associated_data=associated_data,
+        )
+        return result
 
     def verify_mp_config(self, request):
         """微信公众号配置验证"""
@@ -364,9 +369,7 @@ class WeChat():
     def _update_certificates(self):
         path = '/v3/certificates'
         self._certificates.clear()
-        code, message = self.request(path, skip_verify=True)
-        if code != 200:
-            return
+        message = self.pay_request(FakeCertificatesRequest())
         data = json.loads(message).get('data')
         for value in data:
             serial_no = value.get('serial_no')
@@ -385,7 +388,7 @@ class WeChat():
                 nonce=nonce,
                 ciphertext=ciphertext,
                 associated_data=associated_data,
-                apiv3_key=self._apiv3_key)
+            )
             certificate = self.load_certificate(cert_str)
             if not certificate:
                 continue
@@ -402,12 +405,6 @@ class WeChat():
                     f.write(cert_str)
 
 
-wechat_instance = WeChat()
-# 构造签名信息
-
-# 对应v3版微信支付api文档的[签名生成](https://pay.weixin.qq.com/wiki/doc/apiv3/wechatpay/wechatpay4_0.shtml)部分。
-
-
 class FakeCertificatesRequest():
     def __init__(self) -> None:
         self.method = 'GET'
@@ -417,3 +414,9 @@ class FakeCertificatesRequest():
         self.GET = {}
         self.accepted_renderer = {}
         self.path = '/wechatpay/v3/certificates'
+
+
+wechat_instance = WeChat()
+# 构造签名信息
+
+# 对应v3版微信支付api文档的[签名生成](https://pay.weixin.qq.com/wiki/doc/apiv3/wechatpay/wechatpay4_0.shtml)部分。

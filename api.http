@@ -33,10 +33,27 @@ Content-Type: application/json
 Accept: application/json, text/plain, */*
 
 {
-    "description": "消息测试商品8",
-    "out_trade_no": "26a4435196871ff30d20230216124254",
-    "notify_url": "https://37285a7a.r5.cpolar.top/open/paymessage",
-    "goods_tag": "asdfasf",
+    "description": "消息测试商品12",
+    "out_trade_no": "26a4435196871ff30d2023021612427",
+    "notify_url": "https://268d4f98.r5.cpolar.top/open/paymessage",
+    "goods_tag": "xxx",
+    "support_fapiao": false,
+    "amount": {
+        "total": 1,
+        "currency": "CNY"
+    }
+}
+
+### 调起支付
+POST https://www.tigerzh.com/api/open/wechatpay/v3/pay/transactions/native HTTP/1.1
+Content-Type: application/json
+Accept: application/json, text/plain, */*
+
+{
+    "description": "消息测试商品12",
+    "out_trade_no": "26a4435196871ff30d20230216124267",
+    "notify_url": "https://268d4f98.r5.cpolar.top/open/paymessage",
+    "goods_tag": "xxx",
     "support_fapiao": false,
     "amount": {
         "total": 1,

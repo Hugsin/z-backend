@@ -59,7 +59,7 @@ class WechatMessageViewSet(ModelViewSet):
                         instance = user_serializer.save()
                         # 定义用户名规则
                         instance.username = instance.id
-                        result='注册成功'
+                        result = '注册成功'
                 # 登录
                 instance.last_login = timezone.now()
                 instance.save()
@@ -108,22 +108,34 @@ class WechatMessageViewSet(ModelViewSet):
     def pay_message(self, request):
         """微信支付消息"""
         result = wechat_instance.pay_verify_notify(request)
-        print(result)
-        if result and result.get('event_type') == 'TRANSACTION.SUCCESS':
-            resp = result.get('resource')
-            appid = resp.get('appid')
-            mchid = resp.get('mchid')
-            out_trade_no = resp.get('out_trade_no')
-            transaction_id = resp.get('transaction_id')
-            trade_type = resp.get('trade_type')
-            trade_state = resp.get('trade_state')
-            trade_state_desc = resp.get('trade_state_desc')
-            bank_type = resp.get('bank_type')
-            attach = resp.get('attach')
-            success_time = resp.get('success_time')
-            payer = resp.get('payer')
-            amount = resp.get('amount').get('total')
-            # TODO
+        result = json.loads(result)
+        if result:
+            appid = result.get('appid')
+            mchid = result.get('mchid')
+            out_trade_no = result.get('out_trade_no')
+            transaction_id = result.get('transaction_id')
+            trade_type = result.get('trade_type')
+            trade_state = result.get('trade_state')
+            trade_state_desc = result.get('trade_state_desc')
+            bank_type = result.get('bank_type')
+            attach = result.get('attach')
+            success_time = result.get('success_time')
+            payer = result.get('payer').get('openid')
+            total = result.get('amount').get('total')
+            PayOrder.objects.update_or_create(defaults={
+                'appid': appid,
+                'mchid': mchid,
+                'out_trade_no': out_trade_no,
+                'transaction_id': transaction_id,
+                'trade_type': trade_type,
+                'trade_state': trade_state,
+                'trade_state_desc': trade_state_desc,
+                'bank_type': bank_type,
+                'attach': attach,
+                'success_time': success_time,
+                'payer': payer,
+                'total': total,
+            }, out_trade_no=out_trade_no)
             return Response({'code': 'SUCCESS', 'message': '成功'})
         else:
             return Response({'code': 'FAILED', 'message': '失败'})
