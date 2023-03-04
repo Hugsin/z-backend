@@ -12,10 +12,12 @@ from src.open.models import PayOrder
 from src.system.views.user import Users, UserCreateSerializer
 from captcha.views import CaptchaStore
 from src.utils.wechat_util import wechat_instance
+from src.utils.chat_gpt import chat_bot
 from src.utils.request_util import save_login_log
 from django.contrib.auth import authenticate, login, get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils import timezone
+
 UserModel = get_user_model()
 
 
@@ -144,7 +146,10 @@ class WechatViewSet(ModelViewSet):
     """
     serializer_class = WeChatPaySerializer
     permission_classes = []
-
+    def ask(self, request):
+        data= chat_bot.ask(request.GET['q'])
+        return DetailResponse(data=data)
+    
     def mp_request(self, request, path):
         """微信公众号"""
         data = wechat_instance.mp_request(request)

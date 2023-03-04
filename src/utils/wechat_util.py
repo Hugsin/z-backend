@@ -17,7 +17,8 @@ from django.core.cache import cache  # 引入缓存模块
 from src.utils.json_response import ErrorResponse
 from application.settings import WECHAT_PAY_URL, WECHAT_PAY_MCHID,\
     WECHAT_MP_APPID, BASE_DIR, WECHAT_PAY_CERT_NO,\
-    WECHAT_PAY_V3KEY, WECHAT_MP_URL, WECHAT_MP_SECRET, WECHAT_PAY_CERT_DIR
+    WECHAT_PAY_V3KEY, WECHAT_MP_URL, WECHAT_MP_SECRET,\
+    WECHAT_PAY_CERT_DIR, WECHAT_PAY_NOTIFY_URL
 from cryptography.exceptions import InvalidSignature, InvalidTag
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric.padding import MGF1, OAEP, PKCS1v15
@@ -36,7 +37,6 @@ class WeChat():
         self.init_private_key()
         self.init_certificates()
 
-    
     def build_authorization(self, path,
                             method,
                             mchid,
@@ -88,7 +88,7 @@ class WeChat():
     # 对应v3版微信支付api文档的[敏感信息加解密](https://pay.weixin.qq.com/wiki/doc/apiv3/wechatpay/wechatpay4_3.shtml)的加密部分。
 
     def rsa_verify(self, timestamp, nonce, body, signature, certificate):
-        sign_str =f'{timestamp}\n{nonce}\n{body}\n'  
+        sign_str = f'{timestamp}\n{nonce}\n{body}\n'
         public_key = certificate.public_key()
         message = sign_str.encode('UTF-8')
         signature = b64decode(signature)
@@ -158,6 +158,19 @@ class WeChat():
         except:
             raise Exception('failed to load private key.')
 
+    def encode_body(self, data):
+        result = None
+        if data:
+            for it in data:
+                if it == 'mchid':
+                    data[it] = WECHAT_PAY_MCHID
+                elif it == 'appid':
+                    data[it] = WECHAT_MP_APPID
+                elif it == 'notify_url':
+                    data[it] = WECHAT_PAY_NOTIFY_URL
+            result = json.dumps(data)
+        return result
+
     def pay_request(self, request):
         """
         请求微信支付的接口
@@ -176,12 +189,9 @@ class WeChat():
             method = request.method
             if (method == 'POST'):
                 # 获取完整的请求报文
-                data = request.data
-                data['mchid'] = WECHAT_PAY_MCHID
-                data['appid'] = WECHAT_MP_APPID
-                data = json.dumps(data)
-            elif (method == 'GET'):
-                data = None
+                data = self.encode_body(request.data)
+            # elif (method == 'GET'):
+            #     data = None
             # 获取请求地址 别截取后半部分
             path = request.path
             path = str(path).rsplit('wechatpay', 1)[-1]
@@ -278,7 +288,6 @@ class WeChat():
 
 
 # 微信支付相关
-
 
     def get_order_string(self, include_timestamp=True):
         "生产订单号"
