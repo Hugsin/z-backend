@@ -17,6 +17,7 @@ from src.utils.request_util import save_login_log
 from django.contrib.auth import authenticate, login, get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils import timezone
+import re
 
 UserModel = get_user_model()
 
@@ -87,9 +88,10 @@ class WechatMessageViewSet(ModelViewSet):
                 request, msg=msg)
         else:
             # 普通消息
-            Content = msg['xml']['Content']
-            data = chat_bot.ask(Content)
-            result['xml']['Content'] = data
+            # Content = msg['xml']['Content']
+            # data = chat_bot.ask(Content)
+            # re.sub(r'/(chatGPT|机器人)/i','饰你呀',data)
+            result['xml']['Content'] = ''
         return unparse(result)
 
     def mp_message(self, request):
