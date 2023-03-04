@@ -72,6 +72,7 @@ class WechatMessageViewSet(ModelViewSet):
     def msg_adapter(self, request):
         msg = parse(request.body)
         msg_type = msg['xml']['MsgType']
+
         result = ({
             "xml": {
                 "ToUserName": msg['xml']['FromUserName'],
@@ -86,7 +87,9 @@ class WechatMessageViewSet(ModelViewSet):
                 request, msg=msg)
         else:
             # 普通消息
-            result['xml']['Content'] = '嫩哇犀利哦，提昂北洞哟'
+            Content = msg['xml']['Content']
+            data = chat_bot.ask(Content)
+            result['xml']['Content'] = data
         return unparse(result)
 
     def mp_message(self, request):
@@ -146,10 +149,11 @@ class WechatViewSet(ModelViewSet):
     """
     serializer_class = WeChatPaySerializer
     permission_classes = []
+
     def ask(self, request):
-        data= chat_bot.ask(request.GET['q'])
+        data = chat_bot.ask(request.GET['q'])
         return DetailResponse(data=data)
-    
+
     def mp_request(self, request, path):
         """微信公众号"""
         data = wechat_instance.mp_request(request)
