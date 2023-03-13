@@ -222,7 +222,8 @@ class WeChat():
                 cert_found = True
                 certificate = cert
                 break
-        return certificate
+            return certificate
+        return None
 
     def pay_verify_notify(self, request):
         """校验微信通知"""
