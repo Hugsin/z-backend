@@ -221,8 +221,7 @@ class WeChat():
             if int('0x' + serial_no, 16) == cert.serial_number:
                 cert_found = True
                 certificate = cert
-                break
-            return certificate
+                return certificate
         return None
 
     def pay_verify_notify(self, request):
