@@ -10,7 +10,6 @@ Accept: application/json, text/plain, */*
 {
     "description": "测试商品",
     "out_trade_no": "26a4435196871ff30d20230216124235",
-    "notify_url": "https://www.tigerzh.com/api/open/notify",
     "goods_tag": "asdfasf",
     "support_fapiao": false,
     "amount": {
@@ -27,7 +26,7 @@ get http://127.0.0.1:8000/open/wechatpay/v3/certificates HTTP/1.1
 ###
 GET http://127.0.0.1:8000/open/ask HTTP/1.1
 ### 调起支付
-POST http://127.0.0.1:8000/open/wechatpay/v3/pay/transactions/native HTTP/1.1
+POST http://127.0.0.1:8001/open/wechatpay/v3/pay/transactions/native HTTP/1.1
 Content-Type: application/json
 Accept: application/json, text/plain, */*
 
@@ -129,4 +128,34 @@ curl 'https://webapi.jutuike.com/user/info' \
 
 ###
 GET http://localhost:8000/qrlogin/ HTTP/1.1
-    
+
+
+### 
+POST http://127.0.0.1:8000/open/paymessage HTTP/1.1
+Content-Type: application/json
+Content-Length: 923
+Connection: Keep-Alive
+User-Agent: Mozilla/4.0
+Accept: */*
+Host: www.tigerzh.com
+Wechatpay-Nonce: tVgnfGvNA7mQ4pdO1bnoTFPisaOaBKpo
+Wechatpay-Serial: 5A67A5B62F7F262ED202064500874BF77DD3AD3F
+Wechatpay-Signature: gRzZeilBoKpTRdqYledr80KywvVryvbpdP6P0no9MXDh+dgVTwq+C7o47XKtKcf/QyIsFVBEC8pYD24MImSv4aPxFM/Qm/JrnokCsOd3z96alYSJWG9fwGLyEpRtLmL89pdljWTOiq0v70I31pECF0DiCzOFE+R1yXBFUMjNmH8HaGP+abq0z545Y7KkWEN4tlOMlgfKmTdjdGpjZgEeAwcwQTN78+zPXeq3phdtFk69rnPKmYYopCqTcagISjjCc1iUKgyrpwmpOUhYW0yRRllHHYs4qWN92WmXoQ/IOQ4aLWGBaorDv9kJ2o/wh7C5wXP2UXAISwIwmRQ+hBVcdw==
+Wechatpay-Signature-Type: WECHATPAY2-SHA256-RSA2048
+Pragma: no-cache
+Wechatpay-Timestamp: 1678701062
+
+{
+    "id": "164d7dc5-3048-5649-8a0a-650fc911fc57",
+    "create_time": "2023-03-13T17:51:01+08:00",
+    "resource_type": "encrypt-resource",
+    "event_type": "TRANSACTION.SUCCESS",
+    "summary": "支付成功",
+    "resource": {
+      "original_type": "transaction",
+      "algorithm": "AEAD_AES_256_GCM",
+      "ciphertext": "4oQpyPgP07wHLbDpd1I26XnOsW21Y283Xq0YlXMITDI/2uDjYyxOnuhFGeKTc+/xRY22JY94t5D+7tId1ymxzxpTftaektatlqqgREGdxTwEhadCnw7PsJQbAlD9J6skhwaorTZJABeFkenMhC/DtNjD+PdFeIj8f8lHk35G3aDNEKu7yf5Gr9XBZ3ebmjJA3JilMTc/o1RK8syGhjjidQdpUMAtyesGXh6v/ewupStya94XjTjU0SoqMgEStYSJxuVvfLthRJUM5Epw+Evcy5kibVlKAYfXGaMzPE8wssNvPzTdTyyfkFhKoLtRFVxNEWKkGQj6emifL632vCG2smOyH9QQWQg4z//D1+PgHjvZ9pS/Wvz8EdpfU0pBsMYVJKpcXQ9z4Qc8Qw0yGLQZFM+bk8mKgocmHw29zVq9BrCtVS8KVM4Q98Gg5LEyfISa4r7/QKHsQaNgzuBEDx2SMAwArIwx2zPexRfwZt4R93v9crJCx4fOlFBN61xJ3i6JlO+H5IvU8D/ilKAvCV8R05YCJaNYSV2I4WrixyduugL33lbmGQd78DXVJlDJ5/GDmU5Y5AIo9jaD20aKv+cA",
+      "associated_data": "transaction",
+      "nonce": "0640MFmTEzSY"
+    }
+  }

@@ -29,6 +29,17 @@ from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from cryptography.x509 import load_pem_x509_certificate
 
 
+class FakeCertificatesRequest():
+    def __init__(self) -> None:
+        self.method = 'GET'
+        self.headers = {
+            'Content-Type': 'application/json'
+        }
+        self.GET = {}
+        self.accepted_renderer = {}
+        self.path = '/wechatpay/v3/certificates'
+
+
 class WeChat():
     def __init__(self) -> None:
         self._cert_dir = f'{BASE_DIR}/{WECHAT_PAY_CERT_DIR}/'
@@ -190,8 +201,8 @@ class WeChat():
             if (method == 'POST'):
                 # 获取完整的请求报文
                 data = self.encode_body(request.data)
-            # elif (method == 'GET'):
-            #     data = None
+            elif (method == 'GET'):
+                data = None
             # 获取请求地址 别截取后半部分
             path = request.path
             path = str(path).rsplit('wechatpay', 1)[-1]
@@ -288,6 +299,7 @@ class WeChat():
 
 
 # 微信支付相关
+
 
     def get_order_string(self, include_timestamp=True):
         "生产订单号"
@@ -412,17 +424,6 @@ class WeChat():
             if not os.path.exists(self._cert_dir + serial_no + '.pem'):
                 with open(self._cert_dir + serial_no + '.pem', 'w') as f:
                     f.write(cert_str)
-
-
-class FakeCertificatesRequest():
-    def __init__(self) -> None:
-        self.method = 'GET'
-        self.headers = {
-            'Content-Type': 'application/json'
-        }
-        self.GET = {}
-        self.accepted_renderer = {}
-        self.path = '/wechatpay/v3/certificates'
 
 
 wechat_instance = WeChat()
