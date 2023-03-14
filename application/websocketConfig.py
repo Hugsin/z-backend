@@ -14,6 +14,7 @@ from application import settings
 from src.system.models import MessageCenter, Users, MessageCenterTargetUser
 from src.system.views.message_center import MessageCenterTargetUserSerializer
 from src.utils.serializers import CustomModelSerializer
+import base64
 
 send_dict = {}
 
@@ -33,7 +34,8 @@ def set_message(sender, msg_type, msg, unread=0):
 @database_sync_to_async
 def _get_message_center_instance(message_id):
     from src.system.models import MessageCenter
-    _MessageCenter = MessageCenter.objects.filter(id=message_id).values_list('target_user', flat=True)
+    _MessageCenter = MessageCenter.objects.filter(
+        id=message_id).values_list('target_user', flat=True)
     if _MessageCenter:
         return _MessageCenter
     else:
@@ -44,7 +46,8 @@ def _get_message_center_instance(message_id):
 def _get_message_unread(user_id):
     """获取用户的未读消息数量"""
     from src.system.models import MessageCenterTargetUser
-    count = MessageCenterTargetUser.objects.filter(users=user_id, is_read=False).count()
+    count = MessageCenterTargetUser.objects.filter(
+        users=user_id, is_read=False).count()
     return count or 0
 
 
@@ -54,13 +57,19 @@ def request_data(scope):
     return qs
 
 
+# token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluIiwic2Vzc2lvbl9pZCI6ImJmYzg0ZWJiLTliMjAtNDFkZi1hY2Y1LTM5MGVlYjU3YTBjYyIsImV4cCI6MTY4MTM2MzM5Miwib3JpZ19pYXQiOjE2Nzg3NzEzOTJ9.XSQFn4iSGrJ_5caugkc1vGhq147Uul1_PFGevNASxpc'
+# value = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+# print(value)
+
+
 class srcWebSocket(AsyncJsonWebsocketConsumer):
     async def connect(self):
         try:
-            import jwt
             self.service_uid = self.scope["url_route"]["kwargs"]["service_uid"]
-            decoded_result = jwt.decode(self.service_uid, settings.SECRET_KEY, algorithms=["HS256"])
+            decoded_result = base64.b64decode(
+                self.service_uid.split('.')[1]).decode("utf-8")
             if decoded_result:
+                decoded_result = json.loads(decoded_result)
                 self.user_id = decoded_result.get('user_id')
                 self.chat_group_name = "user_" + str(self.user_id)
                 # 收到连接时候处理，
@@ -83,9 +92,10 @@ class srcWebSocket(AsyncJsonWebsocketConsumer):
 
     async def disconnect(self, close_code):
         # Leave room group
-        await self.channel_layer.group_discard(self.chat_group_name, self.channel_name)
-        print("连接关闭")
+
         try:
+            await self.channel_layer.group_discard(self.chat_group_name, self.channel_name)
+            print("连接关闭")
             await self.close(close_code)
         except Exception:
             pass
@@ -122,7 +132,8 @@ class MessageCreateSerializer(CustomModelSerializer):
         fields = "__all__"
         read_only_fields = ["id"]
 
-def websocket_push(user_id,message):
+
+def websocket_push(user_id, message):
     username = "user_" + str(user_id)
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
@@ -133,8 +144,9 @@ def websocket_push(user_id,message):
         }
     )
 
-def create_message_push(title: str, content: str, target_type: int=0, target_user: list=[], target_dept=None, target_role=None,
-             message: dict = {'contentType': 'INFO', 'content': '测试~'}, request= Request):
+
+def create_message_push(title: str, content: str, target_type: int = 0, target_user: list = [], target_dept=None, target_role=None,
+                        message: dict = {'contentType': 'INFO', 'content': '测试~'}, request=Request):
     if message is None:
         message = {"contentType": "INFO", "content": None}
     if target_role is None:
@@ -145,18 +157,21 @@ def create_message_push(title: str, content: str, target_type: int=0, target_use
         "title": title,
         "content": content,
         "target_type": target_type,
-        "target_user":target_user,
-        "target_dept":target_dept,
-        "target_role":target_role
+        "target_user": target_user,
+        "target_dept": target_dept,
+        "target_role": target_role
     }
-    message_center_instance = MessageCreateSerializer(data=data,request=request)
+    message_center_instance = MessageCreateSerializer(
+        data=data, request=request)
     message_center_instance.is_valid(raise_exception=True)
     message_center_instance.save()
     users = target_user or []
     if target_type in [1]:  # 按角色
-        users = Users.objects.filter(role__id__in=target_role).values_list('id', flat=True)
+        users = Users.objects.filter(
+            role__id__in=target_role).values_list('id', flat=True)
     if target_type in [2]:  # 按部门
-        users = Users.objects.filter(dept__id__in=target_dept).values_list('id', flat=True)
+        users = Users.objects.filter(
+            dept__id__in=target_dept).values_list('id', flat=True)
     if target_type in [3]:  # 系统通知
         users = Users.objects.values_list('id', flat=True)
     targetuser_data = []
@@ -165,7 +180,8 @@ def create_message_push(title: str, content: str, target_type: int=0, target_use
             "messagecenter": message_center_instance.instance.id,
             "users": user
         })
-    targetuser_instance = MessageCenterTargetUserSerializer(data=targetuser_data, many=True, request=request)
+    targetuser_instance = MessageCenterTargetUserSerializer(
+        data=targetuser_data, many=True, request=request)
     targetuser_instance.is_valid(raise_exception=True)
     targetuser_instance.save()
     for user in users:
@@ -176,6 +192,6 @@ def create_message_push(title: str, content: str, target_type: int=0, target_use
             username,
             {
                 "type": "push.message",
-                "json": {**message,'unread':unread_count}
+                "json": {**message, 'unread': unread_count}
             }
         )

@@ -16,8 +16,8 @@
 	python3 manage.py init_area
 8. 启动项目
 	python3 manage.py runserver 0.0.0.0:8000
-或使用 daphne :
-  daphne -b 0.0.0.0 -p 8000 application.asgi:application
+gunicorn 启动项目 
+  gunicorn -c gunicorn.py application.asgi:application
 ```
 # command
 ```
