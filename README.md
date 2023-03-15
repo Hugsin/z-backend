@@ -17,7 +17,9 @@
 8. 启动项目
 	python3 manage.py runserver 0.0.0.0:8000
 gunicorn 启动项目 
-  gunicorn -c gunicorn.py application.asgi:application
+	gunicorn -c gunicorn.py application.asgi:application
+	后台运行
+	gunicorn -c gunicorn.py application.asgi:application -D 
 ```
 # command
 ```

@@ -7,7 +7,7 @@ workers = multiprocessing.cpu_count() * 2 + 1
 # 指定每个进程开启的线程数
 threads = 3
 # 绑定的ip与端口
-bind = '0.0.0.0:8000'
+bind = 'unix:./gunicorn.sock'
 # 设置守护进程,将进程交给第三方管理
 daemon = 'false'
 # 工作模式协程，默认的是sync模式,推荐使用 gevent，此处使用与uvicorn配合使用 uvicorn.workers.UvicornWorker
@@ -19,7 +19,7 @@ worker_connections = 10000
 max_requests = 10000
 max_requests_jitter = 200
 # 设置进程文件目录
-pidfile = './gunicorn.pid'
+pidfile = './pid_gunicorn.pid'
 # 日志级别，这个日志级别指的是错误日志的级别，而访问日志的级别无法设置
 loglevel = 'info'
 # 设置gunicorn访问日志格式，错误日志无法设置
