@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .chat-container {
+        margin: 50px auto;
+        max-width: 600px;
+        text-align: center;
+      }
+
+      .chat-bubble {
+        background-color: #f5f5f5;
+        border-radius: 10px;
+        display: inline-block;
+        margin: 10px;
+        padding: 20px;
+        position: relative;
+      }
+
+      .chat-bubble:before {
+        border-right: 15px solid #f5f5f5;
+        border-top: 15px solid transparent;
+        border-bottom: 15px solid transparent;
+        content: "";
+        height: 0;
+        position: absolute;
+        right: -15px;
+        top: 20px;
+        width: 0;
+      }
+
+      .chat-text {
+        animation-duration: 10s;
+        animation-fill-mode: forwards;
+        animation-iteration-count: 1;
+        animation-name: typing;
+        animation-timing-function: steps(32, end);
+        display: inline-block;
+        font-size: 1.2rem;
+        text-align: left;
+        width: 100%;
+      }
+
+      @keyframes typing {
+        from {
+          width: 0;
+        }
+        to {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chat-container">
+      <div class="chat-bubble">
+        <p class="chat-text">
+          Hi, I'm ChatGPT. How can I assist you? 
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
