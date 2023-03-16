@@ -145,7 +145,7 @@ class WechatMessageViewSet(ModelViewSet):
                 defaults=data)
             if(out_trade_no.startswith('c18e')):
                 requests.post(
-                    'https://1a441884.r7.cpolar.top/rap/paymessage', data=data)
+                    'https://www.aicbe.com/api/rap/paymessage/', data=data)
             return Response({'code': 'SUCCESS', 'message': '成功'})
         else:
             return Response({'code': 'FAILED', 'message': '失败'})
