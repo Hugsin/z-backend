@@ -143,9 +143,11 @@ class WechatMessageViewSet(ModelViewSet):
             PayOrder.objects.update_or_create(
                 out_trade_no=out_trade_no,
                 defaults=data)
-            if(out_trade_no.startswith('c18e')):
-                requests.post(
+            if (out_trade_no.startswith('c18e')):
+                response = requests.post(
                     'https://www.aicbe.com/api/rap/paymessage/', data=data)
+                print('支付饭回数据', response.text)
+
             return Response({'code': 'SUCCESS', 'message': '成功'})
         else:
             return Response({'code': 'FAILED', 'message': '失败'})
