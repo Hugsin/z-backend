@@ -22,7 +22,6 @@ from src.utils.json_response import ErrorResponse, DetailResponse
 from src.utils.request_util import save_login_log
 from src.utils.serializers import CustomModelSerializer
 from src.utils.validator import CustomValidationError
-from src.open.views.wehcat import wechat_instance
 from django.http import HttpResponse
 import subprocess
 

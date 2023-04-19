@@ -418,3 +418,4 @@ TABLE_PREFIX = locals().get('TABLE_PREFIX', "")
 SYSTEM_CONFIG = {}
 # 字典配置
 DICTIONARY_CONFIG = {}
+

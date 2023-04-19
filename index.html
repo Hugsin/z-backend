@@ -1,67 +1,108 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <style>
-      .chat-container {
-        margin: 50px auto;
-        max-width: 600px;
-        text-align: center;
-      }
-
-      .chat-bubble {
-        background-color: #f5f5f5;
-        border-radius: 10px;
-        display: inline-block;
-        margin: 10px;
-        padding: 20px;
-        position: relative;
-      }
-
-      .chat-bubble:before {
-        border-right: 15px solid #f5f5f5;
-        border-top: 15px solid transparent;
-        border-bottom: 15px solid transparent;
-        content: "";
-        height: 0;
-        position: absolute;
-        right: -15px;
-        top: 20px;
-        width: 0;
-      }
-
-      .chat-text {
-        animation-duration: 10s;
-        animation-fill-mode: forwards;
-        animation-iteration-count: 1;
-        animation-name: typing;
-        animation-timing-function: steps(32, end);
-        display: inline-block;
-        font-size: 1.2rem;
-        text-align: left;
-        width: 100%;
-      }
-
-      @keyframes typing {
-        from {
-          width: 0;
-        }
-        to {
-          width: 100%;
-        }
-      }
-    </style>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <script
+      charset="utf-8"
+      src="https://g.alicdn.com/mtb/lib-flexible/0.3.2/flexible.js"
+      crossorigin
+    ></script>
+    <script
+      src="//g.alicdn.com/code/lib/qrcodejs/1.0.0/qrcode.min.js"
+      crossorigin
+    ></script>
+    <script
+      charset="utf-8"
+      src="//g.alicdn.com/secdev/entry/index.js"
+      crossorigin
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://g.alicdn.com/bsop-static/sufei-punish/0.1.26/build/main.css"
+    />
   </head>
+
   <body>
-    <div class="chat-container">
-      <div class="chat-bubble">
-        <p class="chat-text">
-          Hi, I'm ChatGPT. How can I assist you? 
-        </p>
-      </div>
-    </div>
+    <script>
+      with (document)
+        with (body)
+          with (insertBefore(createElement("script"), firstChild))
+            setAttribute(
+              "exparams",
+              "category=&userid=&b2c_orid=&b2c_auction=&at_isb=&at_ssid=&bbid=&aplus&at_cart=&at_udid=&asid=AQAAAADmrj9kZdubIwAAAAC2kGWLhvN9mA==&sidx=YuYI5gs+Otq8rRbhx5StiN86VkDce2PvFYG55KME5ttmKPx/mp41UxiK06THscIAAnmv5DhqRuicoP7bkWHtb7pThvtZCwiyIGfNIryOzu+BcLXk6YNzz8W93tKgjp0W8BKt9stoptRpAa2KR/BTdfr52RSf/PcDF2ZDdgZZqYciCOtCJNDh/nXCokRbQx6JjfP91TdFG4bga+EVSWlsw1jznoXRTa1bGWnQWhAg2+nXux53cLTpukMOLnwZzBfGmYrQJ+PZzfNtmt8D7IPuewy2wgUrNDChprsH6u9wZSMZNbdR3CEyvky0svsm9ZP6Pu+MC/omyrlNfSH9nBVTnXpxDo9OFJZWwpkxOh5BU6b+C3s/bBCpoR59EDU+2nN2EaBeVAhfKITlIiR7kXRTj+bfTlNV6wWaXlLzQO2G4HcascuCXyvWsKlRRCnV5JwhdPCXaZ9j1pc9VQ3JLTafF/Jk1mI6d7TN0pqPdnz54v4+LeIQsQf5z97Tb1rLD8gIN/d2iVXTtkFL2DNEBpDz6fcRWI6sknQ3H4U5sRK7Vr+xgviNJO/78YFUGlZz53uAs0i48lOYDphOjcfQUmQhCkgCLocoBbHYYdNIQiy0P0X1bA1jHE3bkS5x40I93lFTONbRsmLq69638wx7UU3aW7N6kS0U2hl2KJcsuf5YvFd+AWfqKY3bLiY/o7bC/ZHsJ9VP+vv98sEei1NBx4XXvzV5aVq5TyM9D8YTGoGWHxyRwP3KajT3AUMfNYQaZw6Bu+CcrtLdDyUS+nqMp/9XbuocG8wCCJopzh0I0a3UYKm0JW/WXdfAdGpasyoJdb3IjTPCTFVx239tEcxav28EyB7/aJn0v9iD2t8kBvI2AfnkJmo3z56PIb/8vL5XzyuDnEcpsNvaDkWWAxUWlscX5LJ0L80TM27eys1CtzdM8QwfbmDn7M0rPZCJyIvJIKi13lHNHLl7JBAEckPL+DTVMHcb+ddZjVXHD3IKthVmsCidAowbvkZAcADz7uzTAGq/",
+              (id = "beacon-aplus"),
+              (src =
+                (location > "https" ? "//g" : "//g") +
+                ".alicdn.com/alilog/mlog/aplus_wap.js")
+            );
+    </script>
+    <script>
+      with (document)
+        with (body)
+          with (insertBefore(createElement("script"), firstChild))
+            setAttribute(
+              "exparams",
+              "category=&userid=&aplus&yunid=&3b37afeb1158&trid=213e1e6a16818951420234727e54d8&asid=AQAAAADmrj9kdb/dMQAAAADw/3e97aOtXg==",
+              (id = "tb-beacon-aplus"),
+              (src =
+                (location > "https" ? "//g" : "//g") +
+                ".alicdn.com/alilog/mlog/aplus_v2.js")
+            );
+    </script>
+
+    <punish-component />
+    <script>
+      window._config_ = {
+        renderTo: "#nocaptcha",
+        customImage: "",
+        NCTOKENSTR: "217f0cdfcf87ce9288d6de7bd38f3b97",
+        action: "captcha",
+        HOST: "shop423965788.m.taobao.com",
+        PATH: "",
+        FORMACTIOIN: "/_____tmd_____/verify/",
+        BXSTEP: "100",
+        SECDATA:
+          "xdf41bf436fecb3da1217f0cdfcf87ce9288d6de7bd38f3b971681895142a118033a1858287894abazc2aaa__bx__shop423965788.m.taobao.com",
+        NCAPPKEY: "X82Y__15c5a3c89bcacf0a8138f34566a0f740",
+        isUpgrade: "false",
+        crossSite: "0",
+      };
+    </script>
   </body>
+  <script
+    charset="utf-8"
+    src="//g.alicdn.com/bsop-static/sufei-punish/0.1.26/build/punishpage.min.js"
+    crossorigin
+  ></script>
+  <script
+    charset="utf-8"
+    type="text/javascript"
+    src="https://g.alicdn.com/dt/tracker/4.0.0/??tracker.Tracker.js,tracker.interfaceTrackerPlugin.js,tracker.performanceTrackerPlugin.js"
+    crossorigin
+  ></script>
+
+  <script type="text/javascript">
+    var tracker = new window.Tracker({
+      uidResolver: function () {
+        // 具体获取 userId 逻辑自行实现
+        return "217f0cdfcf87ce9288d6de7bd38f3b97__1.1.1";
+      },
+      pid: "punish-page",
+      plugins: [
+        [window.interfaceTrackerPlugin],
+        [window.performanceTrackerPlugin, { sampleRate: 1 }],
+      ],
+    });
+    tracker.install();
+    tracker.log({
+      code: 11, // 系统自动生成，请勿修改 100%
+      c1: "217f0cdfcf87ce9288d6de7bd38f3b97",
+      c2: "0.1.26",
+      msg: "霸下通用 web 页面-验证码", // 异常信息，推荐传入
+      sampleRate: 1.0, // 目前采样率为 100.00%
+    });
+  </script>
 </html>
